@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Toy City – Order Portal</title>
+<style>
+  /* ---------- Base ---------- */
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:#2d3748;min-height:100vh;padding-bottom:40px
+  }
+  header{
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    color:#fff;padding:20px 24px;box-shadow:0 4px 6px rgba(0,0,0,.1);
+    position:sticky;top:0;z-index:100
+  }
+  .header-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{font-size:24px;font-weight:700;letter-spacing:.4px;display:flex;align-items:center;gap:10px}
+  .logo::before{content:"🎮";font-size:28px}
+  nav{display:flex;gap:12px;flex-wrap:wrap}
+  .wrap{max-width:1200px;margin:30px auto;padding:0 20px}
+
+  /* ---------- Cards / UI ---------- */
+  .card{background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:28px;margin-bottom:24px}
+  h2{color:#1a202c;margin-bottom:18px;font-size:26px;border-bottom:3px solid #667eea;padding-bottom:10px;display:inline-block}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  input,select{
+    padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;flex:1;min-width:220px;transition:.2s
+  }
+  input:focus,select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
+  button{padding:12px 20px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+  button.primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+  button.secondary{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff}
+  button.ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.85)}
+  .info-box{background:#ebf8ff;border-left:4px solid #3182ce;padding:14px;border-radius:8px;margin:10px 0}
+  .alert{padding:12px;border-radius:10px;margin:10px 0}
+  .alert.error{background:#fed7d7;color:#c53030;border-left:4px solid #c53030}
+  .alert.success{background:#c6f6d5;color:#22543d;border-left:4px solid #22543d}
+
+  /* ---------- Order card ---------- */
+  .order-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:18px;margin:16px 0}
+  .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+  .booking-number{font-size:20px;font-weight:700;color:#1a202c}
+  .badge{display:inline-block;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2)}
+  .badge.success{background:linear-gradient(135deg,#11998e,#38ef7d)}
+  .badge.warning{background:linear-gradient(135deg,#ff6a00,#ee0979)}
+  .muted{color:#718096;font-size:14px;margin:8px 0}
+
+  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;border-radius:10px;overflow:hidden}
+  th,td{padding:12px 10px;text-align:left;font-size:14px;border-bottom:1px solid #e2e8f0}
+  th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.5px}
+
+  @media (max-width:768px){
+    .row{flex-direction:column}
+    input,select,button{width:100%}
+    table{font-size:12px}
+  }
+  @media print{button,nav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-content">
+    <div class="logo">Toy City – Order Portal</div>
+    <nav>
+      <button class="ghost" onclick="showTab('tabCustomer')">🔍 สำหรับลูกค้า</button>
+      <button class="ghost" onclick="showTab('tabAdmin')">⚙️ สำหรับ Admin</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- CUSTOMER -->
+  <div id="tabCustomer" class="card">
+    <h2>🔎 ติดตามสถานะคำสั่งจอง</h2>
+    <div class="info-box">กรอกหมายเลขจอง <b>6 หลัก</b> เพื่อตรวจสอบสถานะ</div>
+    <div class="row">
+      <input id="c-booking"
+             placeholder="กรอกหมายเลขจอง 6 หลัก (เช่น 512340)"
+             maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+             oninput="this.value=this.value.replace(/\\D/g,'').slice(0,6)"
+             onkeypress="if(event.key==='Enter') customerLookup()">
+      <button class="primary" onclick="customerLookup()">🔍 เช็คสถานะ</button>
+    </div>
+    <div id="c-result"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="tabAdmin" class="card" style="display:none">
+    <h2>⚙️ Admin Console</h2>
+    <div id="adminLogin">
+      <div class="info-box">เข้าสู่ระบบเพื่อดู/อัปเดตสถานะ</div>
+      <div class="row">
+        <input id="a-pass" type="password" placeholder="รหัสผ่าน Admin" onkeypress="if(event.key==='Enter') adminLogin()">
+        <button class="secondary" onclick="adminLogin()">🔐 เข้าสู่ระบบ</button>
+      </div>
+    </div>
+    <div id="adminPanel" style="display:none">
+      <div class="row" style="margin:10px 0">
+        <button class="secondary" onclick="loadOrders()">🔄 รีเฟรชรายการ</button>
+      </div>
+      <div id="a-result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====== CONFIG ====== */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz1RXcBHhCyLNtNMbfyDpl3MqK-DKnSRsXaKuteaOTyc3XWf6SdIkvj1RbCE7wXV6G-iQ/exec';
+const ADMIN_PASS  = '6515';
+let adminKey = null;
+
+/* ====== API helper: fetch -> JSONP fallback ====== */
+async function apiGet(qs){
+  const url = `${WEB_APP_URL}?${qs}`;
+  try{
+    const res = await fetch(url, {mode:'cors', cache:'no-store'});
+    return await res.json();
+  }catch(e){
+    return await jsonp(url);
+  }
+}
+function jsonp(url){
+  return new Promise((resolve,reject)=>{
+    const cb = 'cb_' + Math.random().toString(36).slice(2);
+    const s  = document.createElement('script');
+    s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
+    s.onerror = () => { cleanup(); reject(new Error('jsonp failed')); };
+    window[cb] = (data)=>{ cleanup(); resolve(data); };
+    document.head.appendChild(s);
+    function cleanup(){ delete window[cb]; s.remove(); }
+  });
+}
+
+/* ====== Tabs ====== */
+function showTab(id){
+  document.getElementById('tabCustomer').style.display = (id==='tabCustomer')?'block':'none';
+  document.getElementById('tabAdmin').style.display    = (id==='tabAdmin')?'block':'none';
+}
+
+/* ====== CUSTOMER ====== */
+async function customerLookup(){
+  const booking = document.getElementById('c-booking').value.trim();
+  const c = document.getElementById('c-result');
+  if(!/^[0-9]{6}$/.test(booking)){
+    c.innerHTML = '<div class="alert error">❌ กรุณากรอกหมายเลขจองให้ครบ 6 หลัก</div>'; return;
+  }
+  c.innerHTML = '<div class="alert">กำลังค้นหา…</div>';
+  try{
+    const res = await apiGet(`action=order&booking=${encodeURIComponent(booking)}`);
+    if(!res.ok || !res.data){ c.innerHTML = '<div class="alert error">❌ ไม่พบหมายเลขนี้</div>'; return; }
+    c.innerHTML = renderOrder(res.data,false);
+  }catch(e){
+    c.innerHTML = '<div class="alert error">❌ เชื่อมต่อไม่ได้</div>';
+  }
+}
+
+/* ====== ADMIN ====== */
+function adminLogin(){
+  const pass = document.getElementById('a-pass').value.trim();
+  if(pass !== ADMIN_PASS){ alert('รหัสผ่านไม่ถูกต้อง'); return; }
+  adminKey = pass;
+  document.getElementById('adminLogin').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  loadOrders();
+}
+async function loadOrders(){
+  const box = document.getElementById('a-result');
+  box.innerHTML = '<div class="alert">กำลังโหลด…</div>';
+  try{
+    const res = await apiGet(`action=list&adminKey=${encodeURIComponent(adminKey)}`);
+    if(!res.ok){ box.innerHTML = '<div class="alert error">สิทธิ์ไม่ถูกต้อง</div>'; return; }
+    if(!res.data || !res.data.length){ box.innerHTML = '<div class="alert">ยังไม่มีรายการ</div>'; return; }
+    box.innerHTML = res.data.map(o=>renderOrder(o,true)).join('');
+  }catch(e){ box.innerHTML = '<div class="alert error">โหลดไม่ได้</div>'; }
+}
+async function updateStatus(booking){
+  const st = document.getElementById('st-'+booking).value;
+  try{
+    const res = await apiGet(`action=update&adminKey=${encodeURIComponent(adminKey)}&booking=${encodeURIComponent(booking)}&status=${encodeURIComponent(st)}`);
+    if(res.ok){ alert('อัปเดตแล้ว (ระบบส่งอีเมลให้ลูกค้าแล้ว)'); loadOrders(); }
+    else{ alert('อัปเดตไม่สำเร็จ'); }
+  }catch(e){ alert('เชื่อมต่อไม่ได้'); }
+}
+
+/* ====== RENDER ====== */
+function renderOrder(o, includeControls){
+  // ตรวจว่ามี N/O/P อย่างน้อย 1 ตัวไหม
+  const hasDisc     = o.items && o.items.some(it => (it.disc||'').toString().trim()     !== '');
+  const hasDiscCode = o.items && o.items.some(it => (it.discCode||'').toString().trim() !== '');
+  const hasDiscRule = o.items && o.items.some(it => (it.discRule||'').toString().trim() !== '');
+
+  const thead = `
+    <tr>
+      <th>รหัสสินค้า</th>
+      <th>รายละเอียด</th>
+      <th>ราคา</th>
+      <th>จำนวน</th>
+      <th>รวม</th>
+      ${hasDisc?'<th>ส่วนลด</th>':''}
+      ${hasDiscCode?'<th>CODE ส่วนลด</th>':''}
+      ${hasDiscRule?'<th>เงื่อนไขส่วนลด</th>':''}
+    </tr>`;
+
+  const tbody = (o.items||[]).map(it=>`
+    <tr>
+      <td>${escapeHtml(it.code||'-')}</td>
+      <td>${escapeHtml(it.desc||'-')}</td>
+      <td align="right">${num(it.price)}</td>
+      <td align="right">${num(it.qty)}</td>
+      <td align="right">${num(it.amount)}</td>
+      ${hasDisc?`<td>${escapeHtml(it.disc||'')}</td>`:''}
+      ${hasDiscCode?`<td>${escapeHtml(it.discCode||'')}</td>`:''}
+      ${hasDiscRule?`<td>${escapeHtml(it.discRule||'')}</td>`:''}
+    </tr>`).join('');
+
+  let badgeClass = '';
+  if (o.status.includes('จองสินค้า')) badgeClass = 'warning';
+  else if (o.status.includes('จัดส่ง')) badgeClass = '';
+  else if (o.status.includes('ถึงร้าน') || o.status.includes('รับสินค้า')) badgeClass = 'success';
+
+  const controls = includeControls ? `
+    <div class="row" style="margin-top:10px;background:#f7fafc;padding:12px;border-radius:10px">
+      <select id="st-${o.booking}">
+        <option ${o.status==='จองสินค้า'?'selected':''}>จองสินค้า</option>
+        <option ${o.status.startsWith('จัดส่งสินค้า')?'selected':''}>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
+        <option ${o.status==='สินค้าถึงร้านค้าแล้ว'?'selected':''}>สินค้าถึงร้านค้าแล้ว</option>
+        <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย'?'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
+      </select>
+      <button class="primary" onclick="updateStatus('${o.booking}')">💾 อัปเดตสถานะ</button>
+    </div>` : '';
+
+  return `
+    <div class="order-card">
+      <div class="order-header">
+        <div class="booking-number">📋 Booking #${escapeHtml(o.booking)}</div>
+        <span class="badge ${badgeClass}">${escapeHtml(o.status||'-')}</span>
+      </div>
+      <div class="muted">
+        👤 ${escapeHtml(o.customer?.name||'')} ${escapeHtml(o.customer?.last||'')}
+        · 📧 ${escapeHtml(o.customer?.email||'-')}
+        · 📞 ${escapeHtml(o.customer?.tel||'-')}<br>
+        🕐 อัปเดตล่าสุด: ${escapeHtml(o.statusAt||'-')}
+      </div>
+      <table>
+        <thead>${thead}</thead>
+        <tbody>${tbody}</tbody>
+        <tfoot>
+          <tr>
+            <td colspan="${5 + (hasDisc?1:0) + (hasDiscCode?1:0) + (hasDiscRule?1:0)}" align="right"><b>ยอดรวมทั้งหมด</b></td>
+            <td align="right"><b>${num(o.total)} บาท</b></td>
+          </tr>
+        </tfoot>
+      </table>
+      ${controls}
+    </div>`;
+}
+
+/* ====== Utils ====== */
+function num(n){ return Number(n||0).toLocaleString('th-TH'); }
+function escapeHtml(s){ return String(s??'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+/* default tab */
+document.addEventListener('DOMContentLoaded', ()=>showTab('tabCustomer'));
+</script>
+</body>
+</html>
