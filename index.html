@@ -5,31 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>Toy City – Order Portal</title>
 <style>
-  /* ---------- Base ---------- */
   *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-    background:linear-gradient(135deg,#667eea,#764ba2);
-    color:#2d3748;min-height:100vh;padding-bottom:40px
-  }
-  header{
-    background:linear-gradient(135deg,#1e3c72,#2a5298);
-    color:#fff;padding:20px 24px;box-shadow:0 4px 6px rgba(0,0,0,.1);
-    position:sticky;top:0;z-index:100
-  }
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:#2d3748;min-height:100vh;padding-bottom:40px}
+  header{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;padding:20px 24px;box-shadow:0 4px 6px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
   .header-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
   .logo{font-size:24px;font-weight:700;letter-spacing:.4px;display:flex;align-items:center;gap:10px}
   .logo::before{content:"🎮";font-size:28px}
   nav{display:flex;gap:12px;flex-wrap:wrap}
   .wrap{max-width:1200px;margin:30px auto;padding:0 20px}
-
-  /* ---------- Cards / UI ---------- */
   .card{background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:28px;margin-bottom:24px}
   h2{color:#1a202c;margin-bottom:18px;font-size:26px;border-bottom:3px solid #667eea;padding-bottom:10px;display:inline-block}
   .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-  input,select{
-    padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;flex:1;min-width:220px;transition:.2s
-  }
+  input,select{padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;flex:1;min-width:220px;transition:.2s}
   input:focus,select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
   button{padding:12px 20px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
   button.primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
@@ -39,8 +26,6 @@
   .alert{padding:12px;border-radius:10px;margin:10px 0}
   .alert.error{background:#fed7d7;color:#c53030;border-left:4px solid #c53030}
   .alert.success{background:#c6f6d5;color:#22543d;border-left:4px solid #22543d}
-
-  /* ---------- Order card ---------- */
   .order-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:18px;margin:16px 0}
   .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
   .booking-number{font-size:20px;font-weight:700;color:#1a202c}
@@ -48,16 +33,10 @@
   .badge.success{background:linear-gradient(135deg,#11998e,#38ef7d)}
   .badge.warning{background:linear-gradient(135deg,#ff6a00,#ee0979)}
   .muted{color:#718096;font-size:14px;margin:8px 0}
-
   table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;border-radius:10px;overflow:hidden}
   th,td{padding:12px 10px;text-align:left;font-size:14px;border-bottom:1px solid #e2e8f0}
   th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.5px}
-
-  @media (max-width:768px){
-    .row{flex-direction:column}
-    input,select,button{width:100%}
-    table{font-size:12px}
-  }
+  @media (max-width:768px){.row{flex-direction:column} input,select,button{width:100%} table{font-size:12px}}
   @media print{button,nav{display:none}}
 </style>
 </head>
@@ -78,8 +57,7 @@
     <h2>🔎 ติดตามสถานะคำสั่งจอง</h2>
     <div class="info-box">กรอกหมายเลขจอง <b>6 หลัก</b> เพื่อตรวจสอบสถานะ</div>
     <div class="row">
-      <input id="c-booking"
-             placeholder="กรอกหมายเลขจอง 6 หลัก (เช่น 512340)"
+      <input id="c-booking" placeholder="กรอกหมายเลขจอง 6 หลัก (เช่น 512340)"
              maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
              oninput="this.value=this.value.replace(/\\D/g,'').slice(0,6)"
              onkeypress="if(event.key==='Enter') customerLookup()">
@@ -91,15 +69,23 @@
   <!-- ADMIN -->
   <div id="tabAdmin" class="card" style="display:none">
     <h2>⚙️ Admin Console</h2>
+
     <div id="adminLogin">
-      <div class="info-box">เข้าสู่ระบบเพื่อดู/อัปเดตสถานะ</div>
+      <div class="info-box">เข้าสู่ระบบเพื่อดู/อัปเดตสถานะ และพิมพ์ใบจอง</div>
       <div class="row">
         <input id="a-pass" type="password" placeholder="รหัสผ่าน Admin" onkeypress="if(event.key==='Enter') adminLogin()">
         <button class="secondary" onclick="adminLogin()">🔐 เข้าสู่ระบบ</button>
       </div>
     </div>
+
     <div id="adminPanel" style="display:none">
-      <div class="row" style="margin:10px 0">
+      <!-- Filter Bar -->
+      <div class="row" style="margin:6px 0 18px">
+        <select id="f-status" onchange="applyFilters()">
+          <option value="">สถานะ: ทั้งหมด</option>
+        </select>
+        <input id="f-booking" placeholder="เลขใบจอง" oninput="applyFilters()">
+        <input id="f-fromshop" placeholder="From Shop" oninput="applyFilters()">
         <button class="secondary" onclick="loadOrders()">🔄 รีเฟรชรายการ</button>
       </div>
       <div id="a-result"></div>
@@ -112,8 +98,9 @@
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz1RXcBHhCyLNtNMbfyDpl3MqK-DKnSRsXaKuteaOTyc3XWf6SdIkvj1RbCE7wXV6G-iQ/exec';
 const ADMIN_PASS  = '6515';
 let adminKey = null;
+let adminAll = []; // เก็บข้อมูลทั้งหมด เพื่อกรองซ้ำ
 
-/* ====== API helper: fetch -> JSONP fallback ====== */
+/* ====== API helper ====== */
 async function apiGet(qs){
   const url = `${WEB_APP_URL}?${qs}`;
   try{
@@ -173,9 +160,25 @@ async function loadOrders(){
   try{
     const res = await apiGet(`action=list&adminKey=${encodeURIComponent(adminKey)}`);
     if(!res.ok){ box.innerHTML = '<div class="alert error">สิทธิ์ไม่ถูกต้อง</div>'; return; }
-    if(!res.data || !res.data.length){ box.innerHTML = '<div class="alert">ยังไม่มีรายการ</div>'; return; }
-    box.innerHTML = res.data.map(o=>renderOrder(o,true)).join('');
+    adminAll = res.data || [];
+    // เติมรายการสถานะลงตัวกรอง
+    const statuses = Array.from(new Set(adminAll.map(o=>o.status||''))).filter(Boolean);
+    const sel = document.getElementById('f-status');
+    sel.innerHTML = '<option value="">สถานะ: ทั้งหมด</option>' + statuses.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
+    applyFilters();
   }catch(e){ box.innerHTML = '<div class="alert error">โหลดไม่ได้</div>'; }
+}
+function applyFilters(){
+  const st = (document.getElementById('f-status').value || '').trim();
+  const bk = (document.getElementById('f-booking').value || '').trim();
+  const fs = (document.getElementById('f-fromshop').value || '').trim().toLowerCase();
+  let list = adminAll.slice();
+  if(st) list = list.filter(o => (o.status||'') === st);
+  if(bk) list = list.filter(o => String(o.booking||'').includes(bk));
+  if(fs) list = list.filter(o => String(o.fromShop||'').toLowerCase().includes(fs));
+  const box = document.getElementById('a-result');
+  if(!list.length){ box.innerHTML = '<div class="alert">ไม่พบข้อมูลตามเงื่อนไข</div>'; return; }
+  box.innerHTML = list.map(o=>renderOrder(o,true)).join('');
 }
 async function updateStatus(booking){
   const st = document.getElementById('st-'+booking).value;
@@ -186,12 +189,55 @@ async function updateStatus(booking){
   }catch(e){ alert('เชื่อมต่อไม่ได้'); }
 }
 
+/* ====== Printing (RawBT + A4) ====== */
+const TH = { cols:32, topMargin:0, bottomMargin:4, cutMode:'partial' };
+function lineOf(ch='-', len=TH.cols){ return (ch.repeat(len)).slice(0,len) + '\n'; }
+function cutCmd(feed=TH.bottomMargin){
+  let s = '';
+  s += '\x1B' + 'd' + String.fromCharCode(Math.max(0, feed));
+  s += (TH.cutMode==='full') ? '\x1D'+'V'+'\x01' : '\x1D'+'V'+'\x00';
+  return s;
+}
+function escposFor(o){
+  const NL = '\n'; let s = '';
+  s += '\x1B@';
+  if (TH.topMargin>0) s += '\x1Bd' + String.fromCharCode(TH.topMargin);
+  s += '\x1B!\x38' + 'TOY CITY' + NL;
+  s += '\x1B!\x00';
+  s += 'Booking #' + o.booking + NL;
+  s += lineOf('=');
+  s += (o.customer.name||'')+' '+(o.customer.last||'') + NL;
+  s += (o.customer.tel||'')+'  '+(o.customer.email||'') + NL;
+  s += ('From: '+(o.fromShop||'-')+' -> To: '+(o.toShop||'-')) + NL;
+  s += lineOf();
+  (o.items||[]).forEach(it=>{
+    s += (it.code||'') + '  ' + (it.qty||0) + ' x ' + (it.price||0) + NL;
+    s += (it.desc||'').slice(0, TH.cols) + NL;
+    s += ('PROMO%: '+(it.disc||'ไม่มี')+'  CODE: '+(it.discCode||'ไม่มี')) + NL;
+    s += ('COND : '+(it.discRule||'ไม่มี')).slice(0,TH.cols) + NL;
+  });
+  s += lineOf();
+  s += 'Total: ' + (o.total||0) + NL + NL;
+  s += lineOf(); s += '---- ฉีกตามเส้นนี้ ----' + NL;
+  s += '\x1Bd' + '\x08';
+  s += cutCmd();
+  return s;
+}
+async function printRawBT(booking) {
+  try {
+    const data = await apiGet(`action=order&booking=${encodeURIComponent(booking)}`);
+    if (!data.ok || !data.data) { alert('❌ ไม่พบข้อมูลสำหรับพิมพ์'); return; }
+    const esc = escposFor(data.data);
+    const b64 = btoa(unescape(encodeURIComponent(esc)));
+    const uri = `intent://print/#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;S.b64=${b64};end`;
+    try { window.location.href = uri; } catch (e){ window.location.href = 'rawbt://' + b64; }
+  } catch (error) { alert('❌ เกิดข้อผิดพลาดในการพิมพ์'); }
+}
+
 /* ====== RENDER ====== */
 function renderOrder(o, includeControls){
-  // ตรวจว่ามี N/O/P อย่างน้อย 1 ตัวไหม
-  const hasDisc     = o.items && o.items.some(it => (it.disc||'').toString().trim()     !== '');
-  const hasDiscCode = o.items && o.items.some(it => (it.discCode||'').toString().trim() !== '');
-  const hasDiscRule = o.items && o.items.some(it => (it.discRule||'').toString().trim() !== '');
+  // ค่าที่ว่าง ให้โชว์ “ไม่มี”
+  const d = s => (String(s||'').trim()?escapeHtml(s):'ไม่มี');
 
   const thead = `
     <tr>
@@ -200,9 +246,9 @@ function renderOrder(o, includeControls){
       <th>ราคา</th>
       <th>จำนวน</th>
       <th>รวม</th>
-      ${hasDisc?'<th>ส่วนลด</th>':''}
-      ${hasDiscCode?'<th>CODE ส่วนลด</th>':''}
-      ${hasDiscRule?'<th>เงื่อนไขส่วนลด</th>':''}
+      <th>PROMOTION %</th>
+      <th>PROMOTION CODE</th>
+      <th>CONDITION</th>
     </tr>`;
 
   const tbody = (o.items||[]).map(it=>`
@@ -212,15 +258,15 @@ function renderOrder(o, includeControls){
       <td align="right">${num(it.price)}</td>
       <td align="right">${num(it.qty)}</td>
       <td align="right">${num(it.amount)}</td>
-      ${hasDisc?`<td>${escapeHtml(it.disc||'')}</td>`:''}
-      ${hasDiscCode?`<td>${escapeHtml(it.discCode||'')}</td>`:''}
-      ${hasDiscRule?`<td>${escapeHtml(it.discRule||'')}</td>`:''}
+      <td>${d(it.disc)}</td>
+      <td>${d(it.discCode)}</td>
+      <td>${d(it.discRule)}</td>
     </tr>`).join('');
 
   let badgeClass = '';
-  if (o.status.includes('จองสินค้า')) badgeClass = 'warning';
-  else if (o.status.includes('จัดส่ง')) badgeClass = '';
-  else if (o.status.includes('ถึงร้าน') || o.status.includes('รับสินค้า')) badgeClass = 'success';
+  if ((o.status||'').includes('จองสินค้า')) badgeClass = 'warning';
+  else if ((o.status||'').includes('จัดส่ง')) badgeClass = '';
+  else if ((o.status||'').includes('ถึงร้าน') || (o.status||'').includes('รับสินค้า')) badgeClass = 'success';
 
   const controls = includeControls ? `
     <div class="row" style="margin-top:10px;background:#f7fafc;padding:12px;border-radius:10px">
@@ -231,6 +277,8 @@ function renderOrder(o, includeControls){
         <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย'?'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
       </select>
       <button class="primary" onclick="updateStatus('${o.booking}')">💾 อัปเดตสถานะ</button>
+      <button class="secondary" onclick="printRawBT('${o.booking}')">🖨️ Thermal Print</button>
+      <button class="secondary" onclick="window.print()">📄 พิมพ์ A4</button>
     </div>` : '';
 
   return `
@@ -243,6 +291,7 @@ function renderOrder(o, includeControls){
         👤 ${escapeHtml(o.customer?.name||'')} ${escapeHtml(o.customer?.last||'')}
         · 📧 ${escapeHtml(o.customer?.email||'-')}
         · 📞 ${escapeHtml(o.customer?.tel||'-')}<br>
+        🏬 เส้นทาง: ${escapeHtml(o.fromShop||'-')} → ${escapeHtml(o.toShop||'-')}<br>
         🕐 อัปเดตล่าสุด: ${escapeHtml(o.statusAt||'-')}
       </div>
       <table>
@@ -250,7 +299,7 @@ function renderOrder(o, includeControls){
         <tbody>${tbody}</tbody>
         <tfoot>
           <tr>
-            <td colspan="${5 + (hasDisc?1:0) + (hasDiscCode?1:0) + (hasDiscRule?1:0)}" align="right"><b>ยอดรวมทั้งหมด</b></td>
+            <td colspan="7" align="right"><b>ยอดรวมทั้งหมด</b></td>
             <td align="right"><b>${num(o.total)} บาท</b></td>
           </tr>
         </tfoot>
