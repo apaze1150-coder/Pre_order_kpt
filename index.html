@@ -98,6 +98,25 @@
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz7jRT27NkP95s5A1fKORzMzFokJ9VOa47vHcqDv8PfRFlQ1PGB90L_QCUEU8-6vX_Naw/exec';
 const ADMIN_PASS  = '6515';
 let adminKey = null;
+
+function ensureAdmin(){
+  if (!adminKey){
+    const pass = prompt('รหัสผ่าน Admin');
+    if (pass !== ADMIN_PASS) { alert('รหัสผ่านไม่ถูกต้อง'); return false; }
+    adminKey = pass;
+  }
+  return true;
+}
+
+async function loadOrders(){
+  if (!ensureAdmin()) return;
+  const box = document.getElementById('a-result');
+  box.innerHTML = 'กำลังโหลด…';
+  const res = await fetch(`${WEB_APP_URL}?action=list&adminKey=${encodeURIComponent(adminKey)}`).then(r=>r.json());
+  if (!res.ok){ box.innerHTML = 'สิทธิ์ไม่ถูกต้อง'; return; }
+  // …เรนเดอร์ต่อเหมือนเดิม
+}
+
 let adminAll = []; // เก็บข้อมูลทั้งหมด เพื่อกรองซ้ำ
 
 /* ====== API helper ====== */
@@ -317,4 +336,5 @@ document.addEventListener('DOMContentLoaded', ()=>showTab('tabCustomer'));
 </script>
 </body>
 </html>
+
 
