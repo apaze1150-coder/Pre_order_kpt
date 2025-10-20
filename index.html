@@ -5,307 +5,109 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Toy City – Order Portal</title>
 <style>
-  :root{
-    --bg:#f5f7ff; --card:#fff; --primary:#4f46e5; --muted:#6b7280;
-    --ok:#16a34a; --warn:#f59e0b; --err:#ef4444; --line:#e5e7eb;
-  }
-  body{margin:0;background:linear-gradient(180deg,#5b67d9 0%,#7c62d9 60%,#885fd7 100%);
-       font-family:Segoe UI,system-ui,-apple-system,Arial;color:#111}
-  .wrap{max-width:1060px;margin:26px auto;padding:0 16px}
-  .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;color:#fff}
+  body{margin:0;font-family:Segoe UI,system-ui,-apple-system,Arial;background:#f7f8ff}
+  .wrap{max-width:980px;margin:28px auto;padding:0 16px}
+  .top{display:flex;justify-content:space-between;align-items:center}
   .tabs{display:flex;gap:8px}
-  .btn{background:#fff1;border:1px solid #ffffff40;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
-  .btn.active{background:#fff;color:#111}
-  .card{background:var(--card);border-radius:14px;box-shadow:0 10px 30px #0002;margin-top:14px}
-  .card .hd{padding:16px 18px;border-bottom:1px solid var(--line);font-weight:700}
-  .card .bd{padding:18px}
-  .muted{color:var(--muted)}
-  .alert{padding:12px 14px;border-radius:10px}
-  .alert.warn{background:#fff7ed;border:1px solid #fed7aa}
-  .alert.err{background:#fef2f2;border:1px solid #fecaca}
-  table{width:100%;border-collapse:collapse;margin-top:10px}
-  thead th{background:#eef2ff;color:#374151;text-align:left;padding:10px;border-bottom:1px solid var(--line)}
-  td{padding:10px;border-bottom:1px solid var(--line)}
-  td[align="right"]{text-align:right}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .input,select{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-  .btnP{background:var(--primary);color:#fff;border:none}
-  .badge{background:#10b98120;color:#065f46;border:1px solid #10b98155;border-radius:999px;padding:4px 10px;font-size:12px}
-  .order{border:1px solid var(--line);border-radius:12px;margin-top:12px;overflow:hidden}
-  .order-hd{padding:12px 14px;background:#f9fafb;display:flex;justify-content:space-between;align-items:center}
-  .order-sub{color:var(--muted);font-size:13px;padding:0 14px 12px}
-  .order-bd{padding:0 14px 14px}
-  .foot{background:#f9fafb;padding:10px 14px;text-align:right;font-weight:700}
-  /* timeline */
-  .timeline{position:relative;padding-left:28px;margin:12px 0}
-  .timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:4px;background:#e2e8f0;border-radius:2px}
-  .tl-item{position:relative;margin:10px 0;padding-left:12px}
-  .tl-dot{position:absolute;left:-2px;top:2px;width:16px;height:16px;border-radius:50%;background:#667eea;box-shadow:0 0 0 3px #eef2ff inset}
-  .tl-icon{position:absolute;left:-1px;top:-1px;font-size:14px;line-height:16px;width:16px;height:16px;color:#fff;text-align:center}
-  .tl-title{font-weight:700}
-  .tl-time{color:var(--muted);font-size:12px}
-  .flex-end{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+  .btntab{border:1px solid #e5e7eb;background:#fff;color:#111;padding:9px 12px;border-radius:10px;cursor:pointer}
+  .btntab.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 24px #0000000d;margin-top:14px}
+  .hd{padding:14px 16px;border-bottom:1px solid #e5e7eb;font-weight:700}
+  .bd{padding:16px}
+  .muted{color:#6b7280}
+  .alert{padding:12px;border-radius:10px}
+  .warn{background:#fff7ed;border:1px solid #fed7aa}
+  .err{background:#fef2f2;border:1px solid #fecaca}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .input{border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px}
+  .btnP{background:#4f46e5;color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="topbar">
+    <div class="top">
       <h2>🎮 Toy City – Order Portal</h2>
       <div class="tabs">
-        <button id="tabBtnC" class="btn active">สำหรับลูกค้า</button>
-        <button id="tabBtnA" class="btn">สำหรับ Admin</button>
+        <button id="tabC" class="btntab active">สำหรับลูกค้า</button>
+        <button id="tabA" class="btntab">สำหรับ Admin</button>
       </div>
     </div>
 
     <!-- ลูกค้า -->
-    <div id="tabCustomer" class="card">
+    <div id="viewC" class="card">
       <div class="hd">🔎 ติดตามสถานะคำสั่งจอง</div>
       <div class="bd">
-        <div id="c-gate" class="alert warn" style="display:none">
+        <div id="cGate" class="alert warn" style="display:none">
           เพื่อความปลอดภัย โปรดเปิดลิงก์จากอีเมลยืนยันที่เราได้ส่งให้คุณเท่านั้น
         </div>
-        <div id="c-result" class="muted">—</div>
+        <div id="cOut" class="muted">—</div>
       </div>
     </div>
 
     <!-- Admin -->
-    <div id="tabAdmin" class="card" style="display:none">
+    <div id="viewA" class="card" style="display:none">
       <div class="hd">🛠️ Admin Console</div>
-      <div class="bd" id="a-body">
-        <div id="a-login" class="row">
-          <input id="a-pass" class="input" type="password" placeholder="ใส่รหัสผ่าน (6515)"/>
-          <button id="a-go" class="btnP input">เข้าสู่ระบบ</button>
+      <div class="bd">
+        <div class="row" id="aLogin">
+          <input id="aPass" class="input" type="password" placeholder="ใส่รหัสผ่าน (6515)"/>
+          <button id="aGo" class="btnP">เข้าสู่ระบบ</button>
         </div>
-
-        <div id="a-panel" style="display:none">
-          <div class="row" style="margin-bottom:10px">
-            <select id="f-status" class="input">
-              <option value="">สถานะ: ทั้งหมด</option>
-              <option>จองสินค้า</option>
-              <option>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
-              <option>สินค้าถึงร้านแล้ว</option>
-              <option>ลูกค้ารับสินค้าเรียบร้อย</option>
-            </select>
-            <input id="f-booking" class="input" placeholder="เลขใบจอง (เช่น 102380)"/>
-            <input id="f-from" class="input" placeholder="From Shop"/>
-            <button id="a-refresh" class="btn">รีเฟรชรายการ</button>
-          </div>
-          <div id="a-result">—</div>
-        </div>
+        <div id="aMsg" class="muted" style="margin-top:10px"></div>
       </div>
     </div>
   </div>
 
 <script>
-/** ===== ตั้งค่า ===== **/
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxxziOyC5TfTekQJuS5Gf5zwHHkw548EPjHgW7ji4gTlNnFGtFXoLTaFRwIiNoLERVpTQ/exec'; // <— URL /exec ของ GAS
+/** === ตั้งค่า URL ของ GAS Web App ( /exec ) === **/
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxxziOyC5TfTekQJuS5Gf5zwHHkw548EPjHgW7ji4gTlNnFGtFXoLTaFRwIiNoLERVpTQ/exec';
 
-/** ===== Utils ===== **/
+/** === Helpers === **/
 const qs  = new URLSearchParams(location.search);
 const BOOKING = qs.get('booking');
 const TOKEN   = qs.get('token');
-
+const $ = (id)=>document.getElementById(id);
+function show(id, on){ $(id).style.display = on?'block':'none'; }
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function num(n){return Number(n||0).toLocaleString('th-TH');}
-function err(m){return `<div class="alert err">❌ ${m}</div>`;}
-async function j(url){ const r = await fetch(url); return r.json(); }
-function discToText(v){
-  const s = String(v==null?'':v).trim();
-  if(!s) return '';
-  if(/%$/.test(s)) return s;
-  const n = parseFloat(s);
-  if(isNaN(n)) return s;
-  return (n>1?n:n*100)+'%'; // 0.8 -> 80%
-}
-function iconOf(status){
-  if(!status) return '•';
-  if(status.includes('จอง')) return '📝';
-  if(status.includes('จัดส่ง')) return '🚚';
-  if(status.includes('ถึงร้าน')) return '🏬';
-  if(status.includes('รับสินค้า')) return '✅';
-  return '•';
-}
 
-/** ===== Tabs ===== **/
-const tabBtnC=document.getElementById('tabBtnC');
-const tabBtnA=document.getElementById('tabBtnA');
-const tabC   =document.getElementById('tabCustomer');
-const tabA   =document.getElementById('tabAdmin');
-tabBtnC.onclick=()=>{tabBtnC.classList.add('active');tabBtnA.classList.remove('active');tabC.style.display='block';tabA.style.display='none';}
-tabBtnA.onclick=()=>{tabBtnA.classList.add('active');tabBtnC.classList.remove('active');tabA.style.display='block';tabC.style.display='none';}
+/** === สลับแท็บ === **/
+const tabC = $('tabC'), tabA = $('tabA'), viewC = $('viewC'), viewA = $('viewA');
+tabC.onclick = ()=>{ tabC.classList.add('active'); tabA.classList.remove('active'); viewC.style.display='block'; viewA.style.display='none'; }
+tabA.onclick = ()=>{ tabA.classList.add('active'); tabC.classList.remove('active'); viewA.style.display='block'; viewC.style.display='none'; }
 
-/** ===== Customer flow (secure link) ===== **/
-(async function initCustomer(){
-  const gate=document.getElementById('c-gate');
-  const out =document.getElementById('c-result');
-
+/** === ลูกค้า: ต้องมี token + booking === **/
+(function initCustomer(){
+  const gate = $('cGate'), out = $('cOut');
   if(!BOOKING || !TOKEN){
     gate.style.display='block';
-    out.innerHTML='';
-    return;
+    out.innerHTML = '';
+  }else{
+    // แสดงข้อความสั้น ๆ (ตัวแสดงรายละเอียดอยู่หน้าเดิมของคุณ)
+    out.innerHTML = `กำลังโหลดคำสั่งจอง #${esc(BOOKING)} …`;
+    // คุณสามารถดึงข้อมูลจริงเหมือนโค้ดเดิมของคุณตรงนี้ได้เลย
   }
-  try{
-    const order = await j(`${WEB_APP_URL}?action=order&booking=${encodeURIComponent(BOOKING)}&token=${encodeURIComponent(TOKEN)}`);
-    if(!order.ok || !order.data){ out.innerHTML=err('ไม่พบคำสั่งจอง'); return; }
-    const tl = await j(`${WEB_APP_URL}?action=timeline&booking=${encodeURIComponent(BOOKING)}&token=${encodeURIComponent(TOKEN)}`);
-    renderCustomer(order.data, tl.ok?tl.data:[]);
-  }catch(e){ out.innerHTML=err('เชื่อมต่อไม่ได้'); }
 })();
 
-function renderCustomer(o, timeline){
-  const c=document.getElementById('c-result');
-  const hasDisc = o.items.some(it => (it.disc||'').trim());
-
-  const th = `
-    <tr>
-      <th>รหัส</th><th>สินค้า</th><th>ราคา</th><th>จำนวน</th>
-      <th>รวม (หลังลด)</th>
-      ${hasDisc?'<th>PROMOTION %</th><th>PROMOTION CODE</th><th>CONDITION</th>':''}
-    </tr>`;
-  const rows = o.items.map(it=>`
-    <tr>
-      <td>${esc(it.code)}</td>
-      <td>${esc(it.desc)}</td>
-      <td align="right">${num(it.price)}</td>
-      <td align="right">${num(it.qty)}</td>
-      <td align="right">${num(it.amountNet ?? it.amount)}</td>
-      ${hasDisc?`
-        <td>${esc(discToText(it.disc) || 'ไม่มี')}</td>
-        <td>${esc(it.discCode || 'ไม่มี')}</td>
-        <td>${esc(it.discRule || 'ไม่มี')}</td>`:''}
-    </tr>`).join('');
-
-  const tlHtml = (timeline||[]).map(s=>`
-    <div class="tl-item">
-      <div class="tl-dot"></div>
-      <div class="tl-icon">${iconOf(s.status)}</div>
-      <div class="tl-title">${esc(s.status)}</div>
-      <div class="tl-time">${esc(s.when)}</div>
-    </div>`).join('');
-
-  c.innerHTML=`
-  <div class="order">
-    <div class="order-hd">
-      <div>📋 Booking #${o.booking}</div>
-      <div class="badge">${esc(o.status)}</div>
-    </div>
-    <div class="order-sub">👤 ${esc(o.customer.name)} ${esc(o.customer.last)} · 📧 ${esc(o.customer.email)} · 📞 ${esc(o.customer.tel)}<br>
-      เส้นทาง: ${esc(o.fromShop||'-')} → ${esc(o.toShop||'-')}
-    </div>
-    <div class="order-bd">
-      <div class="timeline">${tlHtml}</div>
-      <table>
-        <thead>${th}</thead>
-        <tbody>${rows}</tbody>
-        <tfoot>
-          <tr><td colspan="${hasDisc?5:4}" align="right"><b>ยอดรวมทั้งหมด</b></td>
-              <td align="right"><b>${num(o.total)} บาท</b></td>${hasDisc?'<td colspan="2"></td>':''}
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>`;
-}
-
-/** ===== Admin flow ===== **/
-const aPanel = document.getElementById('a-panel');
-const aPass  = document.getElementById('a-pass');
-document.getElementById('a-go').onclick = ()=>{
-  const key = aPass.value.trim();
-  if(!key){ alert('ใส่รหัสผ่าน'); return; }
-  sessionStorage.setItem('adminKey', key);
-  aPanel.style.display='block';
-  loadAdmin();
+/** === Admin Login === **/
+$('aGo').onclick = async ()=>{
+  const pass = $('aPass').value.trim();
+  if(!pass){ $('aMsg').innerHTML = 'ใส่รหัสก่อนนะครับ'; return; }
+  try{
+    const url = `${WEB_APP_URL}?action=list&adminKey=${encodeURIComponent(pass)}`;
+    const res = await fetch(url).then(r=>r.json());
+    if(res && res.ok){
+      sessionStorage.setItem('adminKey', pass);
+      $('aMsg').innerHTML = 'เข้าสู่ระบบสำเร็จ ✓ (พร้อมใช้งานเมนู Admin ของคุณ)';
+    }else{
+      $('aMsg').innerHTML = 'สิทธิ์ไม่ถูกต้อง';
+    }
+  }catch(e){
+    $('aMsg').innerHTML = 'เชื่อมต่อไม่ได้';
+  }
 };
 
-document.getElementById('a-refresh').onclick = ()=> loadAdmin();
-
-async function loadAdmin(){
-  const key = sessionStorage.getItem('adminKey') || '';
-  const box = document.getElementById('a-result');
-  try{
-    const res = await j(`${WEB_APP_URL}?action=list&adminKey=${encodeURIComponent(key)}`);
-    if(!res.ok){ box.innerHTML = err('สิทธิ์ไม่ถูกต้อง'); return; }
-    renderAdmin(res.data);
-  }catch(e){ box.innerHTML = err('เชื่อมต่อไม่ได้');}
-}
-
-function renderAdmin(list){
-  const fStatus  = document.getElementById('f-status').value.trim();
-  const fBooking = document.getElementById('f-booking').value.trim();
-  const fFrom    = document.getElementById('f-from').value.trim().toLowerCase();
-
-  const data = (list||[]).filter(o=>{
-    if (fStatus && o.status!==fStatus) return false;
-    if (fBooking && String(o.booking)!==fBooking) return false;
-    if (fFrom && String(o.fromShop||'').toLowerCase()!==fFrom) return false;
-    return true;
-  });
-
-  const html = data.map(o=>{
-    const hasDisc = o.items.some(it => (it.disc||'').trim());
-    const th = `
-      <tr>
-        <th>รหัส</th><th>รายละเอียด</th><th>ราคา</th><th>จำนวน</th>
-        <th>รวม (หลังลด)</th>
-        ${hasDisc?'<th>PROMOTION %</th><th>PROMOTION CODE</th><th>CONDITION</th>':''}
-      </tr>`;
-    const rows = o.items.map(it=>`
-      <tr>
-        <td>${esc(it.code)}</td>
-        <td>${esc(it.desc)}</td>
-        <td align="right">${num(it.price)}</td>
-        <td align="right">${num(it.qty)}</td>
-        <td align="right">${num(it.amountNet ?? it.amount)}</td>
-        ${hasDisc?`
-          <td>${esc(discToText(it.disc) || 'ไม่มี')}</td>
-          <td>${esc(it.discCode || 'ไม่มี')}</td>
-          <td>${esc(it.discRule || 'ไม่มี')}</td>`:''}
-      </tr>`).join('');
-
-    // ตัวเลือกสถานะ
-    const opts = ['จองสินค้า','จัดส่งสินค้า (อย่างน้อย 7 วัน)','สินค้าถึงร้านแล้ว','ลูกค้ารับสินค้าเรียบร้อย']
-      .map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('');
-
-    return `
-    <div class="order">
-      <div class="order-hd">
-        <div>📋 Booking #${o.booking}</div>
-        <div class="badge">${esc(o.status)}</div>
-      </div>
-      <div class="order-sub">👤 ${esc(o.customer.name)} ${esc(o.customer.last)} · 📧 ${esc(o.customer.email)} · 📞 ${esc(o.customer.tel)}<br>
-        เส้นทาง: ${esc(o.fromShop||'-')} → ${esc(o.toShop||'-')} · อัปเดตล่าสุด: ${esc(o.statusAt||'-')}
-      </div>
-      <div class="order-bd">
-        <table>
-          <thead>${th}</thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      <div class="foot">
-        <div class="flex-end">
-          <select id="st-${o.booking}" class="input">${opts}</select>
-          <button class="btnP" onclick="updateStatus('${o.booking}')">อัปเดตสถานะ</button>
-          <div style="min-width:10px"></div>
-          <div>รวมทั้งบิล: ${num(o.total)} บาท</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('a-result').innerHTML = html || '<div class="muted">— ไม่มีรายการ —</div>';
-}
-
-async function updateStatus(booking){
-  const key = sessionStorage.getItem('adminKey') || '';
-  const st  = document.getElementById(`st-${booking}`).value;
-  const url = `${WEB_APP_URL}?action=update&adminKey=${encodeURIComponent(key)}&booking=${encodeURIComponent(booking)}&status=${encodeURIComponent(st)}`;
-  try{
-    const res = await j(url);
-    if(!res.ok){ alert('อัปเดตไม่ได้ / สิทธิ์ไม่ถูกต้อง'); return; }
-    alert('อัปเดตสำเร็จ (มีอีเมลแจ้งลูกค้าแล้ว)');
-    loadAdmin();
-  }catch(e){ alert('เชื่อมต่อไม่ได้'); }
+/** === เปิดหน้า Admin อัตโนมัติถ้าใส่ ?admin=1 หรือ #admin === **/
+if (location.search.includes('admin=1') || location.hash.toLowerCase()==='#admin'){
+  tabA.click();
 }
 </script>
 </body>
