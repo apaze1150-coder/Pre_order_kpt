@@ -1,43 +1,48 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Toy City – Order Portal</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:#2d3748;min-height:100vh;padding-bottom:40px}
   header{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;padding:20px 24px;box-shadow:0 4px 6px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
   .header-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-  .logo{font-size:24px;font-weight:700;letter-spacing:.4px;display:flex;align-items:center;gap:10px}
+  .logo{font-size:24px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
   .logo::before{content:"🎮";font-size:28px}
   nav{display:flex;gap:12px;flex-wrap:wrap}
   .wrap{max-width:1200px;margin:30px auto;padding:0 20px}
   .card{background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:28px;margin-bottom:24px}
-  h2{color:#1a202c;margin-bottom:18px;font-size:26px;border-bottom:3px solid #667eea;padding-bottom:10px;display:inline-block}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-  input,select{padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;flex:1;min-width:220px;transition:.2s}
+  h2{color:#1a202c;margin-bottom:16px;font-size:24px;border-bottom:3px solid #667eea;padding-bottom:10px;display:inline-block}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  input,select{padding:10px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;min-width:180px}
   input:focus,select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
-  button{padding:12px 20px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+  button{padding:10px 16px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
   button.primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
   button.secondary{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff}
+  button.success{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+  button.warning{background:linear-gradient(135deg,#ff6a00,#ee0979);color:#fff}
   button.ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.85)}
-  .info-box{background:#ebf8ff;border-left:4px solid #3182ce;padding:14px;border-radius:8px;margin:10px 0}
-  .alert{padding:12px;border-radius:10px;margin:10px 0}
+  .info-box{background:#ebf8ff;border-left:4px solid #3182ce;padding:12px;border-radius:8px;margin:8px 0}
+  .alert{padding:10px;border-radius:10px;margin:10px 0}
   .alert.error{background:#fed7d7;color:#c53030;border-left:4px solid #c53030}
   .alert.success{background:#c6f6d5;color:#22543d;border-left:4px solid #22543d}
-  .order-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:18px;margin:16px 0}
-  .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
-  .booking-number{font-size:20px;font-weight:700;color:#1a202c}
-  .badge{display:inline-block;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2)}
+  .muted{color:#718096;font-size:14px;margin:6px 0}
+  .order-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin:14px 0}
+  .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px;flex-wrap:wrap}
+  .booking-number{font-size:18px;font-weight:700;color:#1a202c}
+  .badge{display:inline-block;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2)}
   .badge.success{background:linear-gradient(135deg,#11998e,#38ef7d)}
   .badge.warning{background:linear-gradient(135deg,#ff6a00,#ee0979)}
-  .muted{color:#718096;font-size:14px;margin:8px 0}
-  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;border-radius:10px;overflow:hidden}
-  th,td{padding:12px 10px;text-align:left;font-size:14px;border-bottom:1px solid #e2e8f0}
-  th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.5px}
+  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;border-radius:10px;overflow:hidden}
+  th,td{padding:10px 8px;text-align:left;font-size:14px;border-bottom:1px solid #e2e8f0}
+  th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:700;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
+  tfoot td{font-weight:700;background:#f7fafc}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
   @media (max-width:768px){.row{flex-direction:column} input,select,button{width:100%} table{font-size:12px}}
-  @media print{button,nav{display:none}}
+  @media print{button,nav,.filters{display:none}}
 </style>
 </head>
 <body>
@@ -55,10 +60,9 @@
   <!-- CUSTOMER -->
   <div id="tabCustomer" class="card">
     <h2>🔎 ติดตามสถานะคำสั่งจอง</h2>
-    <div class="info-box">กรอกหมายเลขจอง <b>6 หลัก</b> เพื่อตรวจสอบสถานะ</div>
+    <div class="info-box">กรอกหมายเลขจอง <b>6 หลัก</b> แล้วกด เช็คสถานะ</div>
     <div class="row">
-      <input id="c-booking" placeholder="กรอกหมายเลขจอง 6 หลัก (เช่น 512340)"
-             maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+      <input id="c-booking" placeholder="เช่น 102380" maxlength="6" inputmode="numeric"
              oninput="this.value=this.value.replace(/\\D/g,'').slice(0,6)"
              onkeypress="if(event.key==='Enter') customerLookup()">
       <button class="primary" onclick="customerLookup()">🔍 เช็คสถานะ</button>
@@ -69,9 +73,8 @@
   <!-- ADMIN -->
   <div id="tabAdmin" class="card" style="display:none">
     <h2>⚙️ Admin Console</h2>
-
     <div id="adminLogin">
-      <div class="info-box">เข้าสู่ระบบเพื่อดู/อัปเดตสถานะ และพิมพ์ใบจอง</div>
+      <div class="info-box">เข้าสู่ระบบเพื่อดู/ค้นหา/อัปเดตสถานะ และสั่งพิมพ์</div>
       <div class="row">
         <input id="a-pass" type="password" placeholder="รหัสผ่าน Admin" onkeypress="if(event.key==='Enter') adminLogin()">
         <button class="secondary" onclick="adminLogin()">🔐 เข้าสู่ระบบ</button>
@@ -79,14 +82,19 @@
     </div>
 
     <div id="adminPanel" style="display:none">
-      <!-- Filter Bar -->
-      <div class="row" style="margin:6px 0 18px">
-        <select id="f-status" onchange="applyFilters()">
-          <option value="">สถานะ: ทั้งหมด</option>
-        </select>
-        <input id="f-booking" placeholder="เลขใบจอง" oninput="applyFilters()">
-        <input id="f-fromshop" placeholder="From Shop" oninput="applyFilters()">
-        <button class="secondary" onclick="loadOrders()">🔄 รีเฟรชรายการ</button>
+      <div class="row">
+        <div class="filters">
+          <select id="f-status" onchange="renderAdmin()">
+            <option value="">สถานะ: ทั้งหมด</option>
+          </select>
+          <input id="f-booking" placeholder="เลขใบจอง (เช่น 102380)" oninput="renderAdmin()">
+          <select id="f-fromshop" onchange="renderAdmin()">
+            <option value="">From Shop: ทั้งหมด</option>
+          </select>
+        </div>
+        <div class="tools">
+          <button class="secondary" onclick="loadOrders()">🔄 รีเฟรช</button>
+        </div>
       </div>
       <div id="a-result"></div>
     </div>
@@ -94,169 +102,109 @@
 </div>
 
 <script>
-/* ====== CONFIG ====== */
+/* === ตั้งค่า URL ของ Web App ( /exec ) ให้ถูกต้อง === */
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxGsiKNkWQOQRql0h1sWEZLsgoJXLiQyIWRkQ6pFbj2Oqp4S7keuiF5lpXaWRhjiAndAQ/exec';
 const ADMIN_PASS  = '6515';
+
 let adminKey = null;
+let ordersCache = []; // เก็บรายการทั้งหมดสำหรับกรอง
 
-function ensureAdmin(){
-  if (!adminKey){
-    const pass = prompt('รหัสผ่าน Admin');
-    if (pass !== ADMIN_PASS) { alert('รหัสผ่านไม่ถูกต้อง'); return false; }
-    adminKey = pass;
-  }
-  return true;
-}
-
-async function loadOrders(){
-  if (!ensureAdmin()) return;
-  const box = document.getElementById('a-result');
-  box.innerHTML = 'กำลังโหลด…';
-  const res = await fetch(`${WEB_APP_URL}?action=list&adminKey=${encodeURIComponent(adminKey)}`).then(r=>r.json());
-  if (!res.ok){ box.innerHTML = 'สิทธิ์ไม่ถูกต้อง'; return; }
-  // …เรนเดอร์ต่อเหมือนเดิม
-}
-
-let adminAll = []; // เก็บข้อมูลทั้งหมด เพื่อกรองซ้ำ
-
-/* ====== API helper ====== */
-async function apiGet(qs){
-  const url = `${WEB_APP_URL}?${qs}`;
-  try{
-    const res = await fetch(url, {mode:'cors', cache:'no-store'});
-    return await res.json();
-  }catch(e){
-    return await jsonp(url);
-  }
-}
-function jsonp(url){
-  return new Promise((resolve,reject)=>{
-    const cb = 'cb_' + Math.random().toString(36).slice(2);
-    const s  = document.createElement('script');
-    s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
-    s.onerror = () => { cleanup(); reject(new Error('jsonp failed')); };
-    window[cb] = (data)=>{ cleanup(); resolve(data); };
-    document.head.appendChild(s);
-    function cleanup(){ delete window[cb]; s.remove(); }
-  });
-}
-
-/* ====== Tabs ====== */
 function showTab(id){
   document.getElementById('tabCustomer').style.display = (id==='tabCustomer')?'block':'none';
   document.getElementById('tabAdmin').style.display    = (id==='tabAdmin')?'block':'none';
 }
 
-/* ====== CUSTOMER ====== */
+/* ===== CUSTOMER ===== */
 async function customerLookup(){
   const booking = document.getElementById('c-booking').value.trim();
-  const c = document.getElementById('c-result');
-  if(!/^[0-9]{6}$/.test(booking)){
-    c.innerHTML = '<div class="alert error">❌ กรุณากรอกหมายเลขจองให้ครบ 6 หลัก</div>'; return;
+  const box = document.getElementById('c-result');
+  if (!/^[0-9]{6}$/.test(booking)){
+    box.innerHTML = '<div class="alert error">❌ กรุณากรอกหมายเลขจอง 6 หลัก</div>';
+    return;
   }
-  c.innerHTML = '<div class="alert">กำลังค้นหา…</div>';
+  box.innerHTML = '<div class="alert">กำลังค้นหา…</div>';
   try{
-    const res = await apiGet(`action=order&booking=${encodeURIComponent(booking)}`);
-    if(!res.ok || !res.data){ c.innerHTML = '<div class="alert error">❌ ไม่พบหมายเลขนี้</div>'; return; }
-    c.innerHTML = renderOrder(res.data,false);
+    const res = await fetch(`${WEB_APP_URL}?action=order&booking=${encodeURIComponent(booking)}`).then(r=>r.json());
+    if(!res.ok || !res.data){ box.innerHTML = '<div class="alert error">❌ ไม่พบหมายเลขนี้</div>'; return; }
+    box.innerHTML = renderOrder(res.data,false);
   }catch(e){
-    c.innerHTML = '<div class="alert error">❌ เชื่อมต่อไม่ได้</div>';
+    console.error(e);
+    box.innerHTML = '<div class="alert error">❌ เชื่อมต่อไม่ได้</div>';
   }
 }
 
-/* ====== ADMIN ====== */
+/* ===== ADMIN ===== */
 function adminLogin(){
   const pass = document.getElementById('a-pass').value.trim();
-  if(pass !== ADMIN_PASS){ alert('รหัสผ่านไม่ถูกต้อง'); return; }
+  if (pass !== ADMIN_PASS){ alert('รหัสผ่านไม่ถูกต้อง'); return; }
   adminKey = pass;
   document.getElementById('adminLogin').style.display='none';
   document.getElementById('adminPanel').style.display='block';
   loadOrders();
 }
+
 async function loadOrders(){
   const box = document.getElementById('a-result');
   box.innerHTML = '<div class="alert">กำลังโหลด…</div>';
   try{
-    const res = await apiGet(`action=list&adminKey=${encodeURIComponent(adminKey)}`);
-    if(!res.ok){ box.innerHTML = '<div class="alert error">สิทธิ์ไม่ถูกต้อง</div>'; return; }
-    adminAll = res.data || [];
-    // เติมรายการสถานะลงตัวกรอง
-    const statuses = Array.from(new Set(adminAll.map(o=>o.status||''))).filter(Boolean);
-    const sel = document.getElementById('f-status');
-    sel.innerHTML = '<option value="">สถานะ: ทั้งหมด</option>' + statuses.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
-    applyFilters();
-  }catch(e){ box.innerHTML = '<div class="alert error">โหลดไม่ได้</div>'; }
+    const res = await fetch(`${WEB_APP_URL}?action=list&adminKey=${encodeURIComponent(adminKey)}`).then(r=>r.json());
+    if(!res.ok){ box.innerHTML = '<div class="alert error">❌ สิทธิ์ไม่ถูกต้อง</div>'; return; }
+    ordersCache = res.data || [];
+    buildFilters(ordersCache);
+    renderAdmin();
+  }catch(e){
+    console.error(e);
+    box.innerHTML = '<div class="alert error">❌ โหลดข้อมูลไม่สำเร็จ</div>';
+  }
 }
-function applyFilters(){
-  const st = (document.getElementById('f-status').value || '').trim();
-  const bk = (document.getElementById('f-booking').value || '').trim();
-  const fs = (document.getElementById('f-fromshop').value || '').trim().toLowerCase();
-  let list = adminAll.slice();
-  if(st) list = list.filter(o => (o.status||'') === st);
-  if(bk) list = list.filter(o => String(o.booking||'').includes(bk));
-  if(fs) list = list.filter(o => String(o.fromShop||'').toLowerCase().includes(fs));
+
+function buildFilters(data){
+  // Status options
+  const stSel = document.getElementById('f-status');
+  const statuses = Array.from(new Set(data.map(o=>o.status).filter(Boolean))).sort();
+  stSel.innerHTML = '<option value="">สถานะ: ทั้งหมด</option>' + statuses.map(s=>`<option>${s}</option>`).join('');
+
+  // From Shop options
+  const fsSel = document.getElementById('f-fromshop');
+  const shops = Array.from(new Set(data.map(o=>o.fromShop||'').filter(Boolean))).sort();
+  fsSel.innerHTML = '<option value="">From Shop: ทั้งหมด</option>' + shops.map(s=>`<option>${s}</option>`).join('');
+}
+
+function renderAdmin(){
+  const st  = document.getElementById('f-status').value.trim();
+  const bk  = document.getElementById('f-booking').value.trim();
+  const fs  = document.getElementById('f-fromshop').value.trim();
   const box = document.getElementById('a-result');
-  if(!list.length){ box.innerHTML = '<div class="alert">ไม่พบข้อมูลตามเงื่อนไข</div>'; return; }
+
+  let list = ordersCache.slice();
+  if (st) list = list.filter(o => (o.status||'') === st);
+  if (bk) list = list.filter(o => String(o.booking||'').includes(bk));
+  if (fs) list = list.filter(o => (o.fromShop||'') === fs);
+
+  if (!list.length){ box.innerHTML = '<div class="alert">ไม่พบข้อมูลตามเงื่อนไข</div>'; return; }
   box.innerHTML = list.map(o=>renderOrder(o,true)).join('');
 }
+
 async function updateStatus(booking){
+  if (!adminKey){ alert('กรุณาเข้าสู่ระบบก่อน'); return; }
   const st = document.getElementById('st-'+booking).value;
   try{
-    const res = await apiGet(`action=update&adminKey=${encodeURIComponent(adminKey)}&booking=${encodeURIComponent(booking)}&status=${encodeURIComponent(st)}`);
-    if(res.ok){ alert('อัปเดตแล้ว (ระบบส่งอีเมลให้ลูกค้าแล้ว)'); loadOrders(); }
-    else{ alert('อัปเดตไม่สำเร็จ'); }
-  }catch(e){ alert('เชื่อมต่อไม่ได้'); }
+    const res = await fetch(`${WEB_APP_URL}?action=update&adminKey=${encodeURIComponent(adminKey)}&booking=${encodeURIComponent(booking)}&status=${encodeURIComponent(st)}`).then(r=>r.json());
+    if (res.ok){
+      alert('✅ อัปเดตแล้ว (มีอีเมลแจ้งลูกค้า)');
+      loadOrders();
+    }else{
+      alert('❌ อัปเดตไม่สำเร็จ');
+    }
+  }catch(e){ alert('❌ เกิดข้อผิดพลาด'); }
 }
 
-/* ====== Printing (RawBT + A4) ====== */
-const TH = { cols:32, topMargin:0, bottomMargin:4, cutMode:'partial' };
-function lineOf(ch='-', len=TH.cols){ return (ch.repeat(len)).slice(0,len) + '\n'; }
-function cutCmd(feed=TH.bottomMargin){
-  let s = '';
-  s += '\x1B' + 'd' + String.fromCharCode(Math.max(0, feed));
-  s += (TH.cutMode==='full') ? '\x1D'+'V'+'\x01' : '\x1D'+'V'+'\x00';
-  return s;
-}
-function escposFor(o){
-  const NL = '\n'; let s = '';
-  s += '\x1B@';
-  if (TH.topMargin>0) s += '\x1Bd' + String.fromCharCode(TH.topMargin);
-  s += '\x1B!\x38' + 'TOY CITY' + NL;
-  s += '\x1B!\x00';
-  s += 'Booking #' + o.booking + NL;
-  s += lineOf('=');
-  s += (o.customer.name||'')+' '+(o.customer.last||'') + NL;
-  s += (o.customer.tel||'')+'  '+(o.customer.email||'') + NL;
-  s += ('From: '+(o.fromShop||'-')+' -> To: '+(o.toShop||'-')) + NL;
-  s += lineOf();
-  (o.items||[]).forEach(it=>{
-    s += (it.code||'') + '  ' + (it.qty||0) + ' x ' + (it.price||0) + NL;
-    s += (it.desc||'').slice(0, TH.cols) + NL;
-    s += ('PROMO%: '+(it.disc||'ไม่มี')+'  CODE: '+(it.discCode||'ไม่มี')) + NL;
-    s += ('COND : '+(it.discRule||'ไม่มี')).slice(0,TH.cols) + NL;
-  });
-  s += lineOf();
-  s += 'Total: ' + (o.total||0) + NL + NL;
-  s += lineOf(); s += '---- ฉีกตามเส้นนี้ ----' + NL;
-  s += '\x1Bd' + '\x08';
-  s += cutCmd();
-  return s;
-}
-async function printRawBT(booking) {
-  try {
-    const data = await apiGet(`action=order&booking=${encodeURIComponent(booking)}`);
-    if (!data.ok || !data.data) { alert('❌ ไม่พบข้อมูลสำหรับพิมพ์'); return; }
-    const esc = escposFor(data.data);
-    const b64 = btoa(unescape(encodeURIComponent(esc)));
-    const uri = `intent://print/#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;S.b64=${b64};end`;
-    try { window.location.href = uri; } catch (e){ window.location.href = 'rawbt://' + b64; }
-  } catch (error) { alert('❌ เกิดข้อผิดพลาดในการพิมพ์'); }
-}
-
-/* ====== RENDER ====== */
+/* ===== Render ===== */
 function renderOrder(o, includeControls){
-  // ค่าที่ว่าง ให้โชว์ “ไม่มี”
-  const d = s => (String(s||'').trim()?escapeHtml(s):'ไม่มี');
+  const statusAtDisplay = o.statusAt || '-';
+  let badgeClass = '';
+  if (o.status.includes('จองสินค้า')) badgeClass = 'warning';
+  else if (o.status.includes('ถึงร้าน') || o.status.includes('รับสินค้า')) badgeClass = 'success';
 
   const thead = `
     <tr>
@@ -272,46 +220,48 @@ function renderOrder(o, includeControls){
 
   const tbody = (o.items||[]).map(it=>`
     <tr>
-      <td>${escapeHtml(it.code||'-')}</td>
-      <td>${escapeHtml(it.desc||'-')}</td>
+      <td>${esc(it.code)||'-'}</td>
+      <td>${esc(it.desc)||'-'}</td>
       <td align="right">${num(it.price)}</td>
       <td align="right">${num(it.qty)}</td>
       <td align="right">${num(it.amount)}</td>
-      <td>${d(it.disc)}</td>
-      <td>${d(it.discCode)}</td>
-      <td>${d(it.discRule)}</td>
+      <td>${displayOrNone(it.disc)}</td>
+      <td>${displayOrNone(it.discCode)}</td>
+      <td>${displayOrNone(it.discRule)}</td>
     </tr>`).join('');
 
-  let badgeClass = '';
-  if ((o.status||'').includes('จองสินค้า')) badgeClass = 'warning';
-  else if ((o.status||'').includes('จัดส่ง')) badgeClass = '';
-  else if ((o.status||'').includes('ถึงร้าน') || (o.status||'').includes('รับสินค้า')) badgeClass = 'success';
-
   const controls = includeControls ? `
-    <div class="row" style="margin-top:10px;background:#f7fafc;padding:12px;border-radius:10px">
+    <div class="tools">
       <select id="st-${o.booking}">
         <option ${o.status==='จองสินค้า'?'selected':''}>จองสินค้า</option>
         <option ${o.status.startsWith('จัดส่งสินค้า')?'selected':''}>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
+        <option ${o.status==='สินค้าถึงร้านแล้ว'?'selected':''}>สินค้าถึงร้านแล้ว</option>
         <option ${o.status==='สินค้าถึงร้านค้าแล้ว'?'selected':''}>สินค้าถึงร้านค้าแล้ว</option>
         <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย'?'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
       </select>
       <button class="primary" onclick="updateStatus('${o.booking}')">💾 อัปเดตสถานะ</button>
-      <button class="secondary" onclick="printRawBT('${o.booking}')">🖨️ Thermal Print</button>
-      <button class="secondary" onclick="window.print()">📄 พิมพ์ A4</button>
-    </div>` : '';
+      <button class="warning" onclick="printThermal('${o.booking}')">🖨️ พิมพ์ใบจอง (Thermal)</button>
+      <button class="success" onclick="window.print()">📄 พิมพ์ A4</button>
+    </div>
+  ` : `
+    <div class="tools">
+      <button class="warning" onclick="printThermal('${o.booking}')">🖨️ พิมพ์ใบจอง (Thermal)</button>
+      <button class="success" onclick="window.print()">📄 พิมพ์ A4</button>
+    </div>
+  `;
 
   return `
     <div class="order-card">
       <div class="order-header">
-        <div class="booking-number">📋 Booking #${escapeHtml(o.booking)}</div>
-        <span class="badge ${badgeClass}">${escapeHtml(o.status||'-')}</span>
+        <div class="booking-number">📋 Booking #${o.booking}</div>
+        <span class="badge ${badgeClass}">${o.status}</span>
       </div>
       <div class="muted">
-        👤 ${escapeHtml(o.customer?.name||'')} ${escapeHtml(o.customer?.last||'')}
-        · 📧 ${escapeHtml(o.customer?.email||'-')}
-        · 📞 ${escapeHtml(o.customer?.tel||'-')}<br>
-        🏬 เส้นทาง: ${escapeHtml(o.fromShop||'-')} → ${escapeHtml(o.toShop||'-')}<br>
-        🕐 อัปเดตล่าสุด: ${escapeHtml(o.statusAt||'-')}
+        👤 ${esc(o.customer?.name)||''} ${esc(o.customer?.last)||''} ·
+        📧 ${esc(o.customer?.email)||'-'} ·
+        📞 ${esc(o.customer?.tel)||'-'}<br>
+        🏬 เส้นทางร้าน: ${displayOrNone(o.fromShop)} → ${displayOrNone(o.toShop)}<br>
+        🕐 อัปเดตล่าสุด: ${statusAtDisplay}
       </div>
       <table>
         <thead>${thead}</thead>
@@ -327,17 +277,59 @@ function renderOrder(o, includeControls){
     </div>`;
 }
 
-/* ====== Utils ====== */
+/* ===== Thermal Print (RawBT) ===== */
+const TH = { cols: 32, topMargin: 0, bottomMargin: 5, cutMode: 'partial' }; // 58mm ใช้ 32 cols
+function lineOf(ch='-', len=TH.cols){ return (ch.repeat(len)).slice(0,len) + '\n'; }
+function cutCmd(feed=TH.bottomMargin){
+  let s=''; s+='\x1B'+'d'+String.fromCharCode(Math.max(0,feed));
+  s+=(TH.cutMode==='full')?'\x1D'+'V'+'\x01':'\x1D'+'V'+'\x00'; return s;
+}
+function escposFor(o){
+  const NL='\n';
+  let s=''; s+='\x1B@'; if(TH.topMargin>0) s+='\x1Bd'+String.fromCharCode(TH.topMargin);
+  s+='\x1B!\x38'+'TOY CITY'+NL; s+='\x1B!\x00';
+  s+='Booking #'+o.booking+NL;
+  s+=lineOf('=');
+  s+=(o.customer?.name||'')+' '+(o.customer?.last||'')+NL;
+  s+=(o.customer?.tel||'')+'  '+(o.customer?.email||'')+NL;
+  s+='Route: '+(o.fromShop||'-')+' -> '+(o.toShop||'-')+NL;
+  s+=lineOf();
+
+  (o.items||[]).forEach(it=>{
+    s+=(it.code||'')+'  '+(it.qty||0)+' x '+(it.price||0)+NL;
+    s+=(it.desc||'').slice(0,TH.cols)+NL;
+    // โปรฯ
+    const d=(it.disc||'ไม่มี'), c=(it.discCode||'ไม่มี'), r=(it.discRule||'ไม่มี');
+    s+=('PROMO: '+d).slice(0,TH.cols)+NL;
+    s+=('CODE : '+c).slice(0,TH.cols)+NL;
+    s+=('COND : '+r).slice(0,TH.cols)+NL;
+    s+=lineOf();
+  });
+
+  s+='Total: '+(o.total||0)+NL;
+  s+=lineOf(); s+='--- ฉีกตามเส้นนี้ ---'+NL;
+  s+='\x1Bd'+'\x06'; // feed เพิ่ม
+  s+=cutCmd();
+  return s;
+}
+async function printThermal(booking){
+  try{
+    const data = await fetch(`${WEB_APP_URL}?action=order&booking=${encodeURIComponent(booking)}`).then(r=>r.json());
+    if (!data.ok || !data.data){ alert('❌ ไม่พบข้อมูลสำหรับพิมพ์'); return; }
+    const esc = escposFor(data.data);
+    const b64 = btoa(unescape(encodeURIComponent(esc)));
+    const uri = `intent://print/#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;S.b64=${b64};end`;
+    try{ window.location.href = uri; }catch(e){ window.location.href = 'rawbt://'+b64; }
+  }catch(e){ alert('❌ พิมพ์ไม่ได้'); }
+}
+
+/* ===== Utils ===== */
 function num(n){ return Number(n||0).toLocaleString('th-TH'); }
-function escapeHtml(s){ return String(s??'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+function esc(s){ return String(s==null?'':s); }
+function displayOrNone(v){ const t=String(v==null?'':v).trim(); return t?esc(t):'ไม่มี'; }
 
 /* default tab */
-document.addEventListener('DOMContentLoaded', ()=>showTab('tabCustomer'));
+showTab('tabCustomer');
 </script>
 </body>
 </html>
-
-
-
-
-
