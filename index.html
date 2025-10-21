@@ -1,240 +1,257 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toy City – Order Portal</title>
 <style>
-  :root{--pri:#4f46e5;--mut:#6b7280;--bd:#e5e7eb;--bg:#f7f8ff}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Segoe UI,system-ui,-apple-system,Arial;background:var(--bg);color:#111}
-  .wrap{max-width:1080px;margin:28px auto;padding:0 16px}
-  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  :root{
+    --pri:#5b61ff; --pri2:#7749f8; --bg:#f6f7fb; --mut:#667085; --ok:#14a44d; --err:#e11d48;
+  }
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#111}
+  header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:#fff;box-shadow:0 2px 8px rgba(16,24,40,.06)}
+  .brand{font-size:20px;font-weight:700}
   .tabs{display:flex;gap:10px}
-  .tab{border:1px solid var(--bd);background:#fff;padding:9px 12px;border-radius:12px;cursor:pointer}
-  .tab.active{background:var(--pri);color:#fff;border-color:var(--pri)}
-  .card{background:#fff;border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 24px #00000010;margin-top:14px}
-  .hd{padding:14px 16px;border-bottom:1px solid var(--bd);font-weight:700}
-  .bd{padding:16px}
-  .muted{color:var(--mut)}
+  .tabbtn{padding:10px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
+  .tabbtn.active{background:var(--pri);color:#fff;border-color:transparent}
+  main{max-width:1000px;margin:24px auto;padding:0 14px}
+  .card{background:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.06);padding:16px 18px;margin-bottom:16px}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .input{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;min-width:240px}
-  .btnP{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
-  .btnS{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:10px 14px;cursor:pointer}
-  .alert{padding:12px;border-radius:10px;margin-bottom:10px}
-  .warn{background:#fff7ed;border:1px solid #fed7aa}
-  .err{background:#fef2f2;border:1px solid #fecaca}
-  .order{border:1px solid var(--bd);border-radius:12px;margin-top:12px;overflow:hidden}
-  .order-hd{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;background:#fafbff;border-bottom:1px solid var(--bd);flex-wrap:wrap}
-  .badge{padding:6px 10px;border-radius:999px;font-size:13px;background:#eef2ff;color:#3730a3}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:10px;border-bottom:1px solid var(--bd);font-size:14px}
-  th{background:#f3f4ff;text-align:left}
-  .right{text-align:right}
+  .filter{height:40px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px;background:#fff}
+  .btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+  .btn.secondary{background:#f1f5ff;color:#374151;border:1px solid #e5e7eb}
+  .btn.ok{background:var(--ok)}
+  .btn.err{background:var(--err)}
+  .alert{padding:10px 12px;border-radius:8px;background:#eef2ff;color:#3730a3}
+  .alert.error{background:#fde2e4;color:#9b1c1c}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{border-bottom:1px solid #eef2f7;padding:10px 8px;font-size:14px;vertical-align:top}
+  th{background:linear-gradient(180deg,#6b7cff,#4f46e5);color:#fff;position:sticky;top:0}
+  td.num{text-align:right}
+  .order-card{border:1px solid #eef2f7;border-radius:12px;padding:12px;margin:12px 0}
+  .mut{color:var(--mut);font-size:13px}
+  .pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#ebf1ff;color:#223}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
-    <h2>🎮 Toy City – Order Portal</h2>
-    <div class="tabs">
-      <button id="tabC" class="tab active">สำหรับลูกค้า</button>
-      <button id="tabA" class="tab">สำหรับ Admin</button>
-    </div>
+<header>
+  <div class="brand">🎮 Toy City – Order Portal</div>
+  <div class="tabs">
+    <button id="tabC" class="tabbtn active" onclick="switchTab('c')">สำหรับลูกค้า</button>
+    <button id="tabA" class="tabbtn" onclick="switchTab('a')">สำหรับ Admin</button>
   </div>
+</header>
 
-  <!-- CUSTOMER (แสดงเฉพาะลิงก์จากอีเมล) -->
-  <div id="viewC" class="card">
-    <div class="hd">🔎 ติดตามสถานะคำสั่งจอง</div>
-    <div class="bd">
-      <div id="cGate" class="alert warn" style="display:none">
-        เพื่อความปลอดภัย โปรดเปิดลิงก์จากอีเมลยืนยันที่เราได้ส่งให้คุณเท่านั้น
-      </div>
-      <div id="cOut" class="muted">—</div>
-    </div>
-  </div>
+<main>
+  <!-- CUSTOMER -->
+  <section id="secC" class="card">
+    <h3>🔎 ติดตามสถานะคำสั่งจอง</h3>
+    <div class="mut">เพื่อความปลอดภัย โปรดเปิดลิงก์จากอีเมลยืนยันที่เราได้ส่งให้คุณเท่านั้น</div>
+    <div id="c-result" style="margin-top:12px"></div>
+  </section>
 
   <!-- ADMIN -->
-  <div id="viewA" class="card" style="display:none">
-    <div class="hd">🛠️ Admin Console</div>
-    <div class="bd">
-      <!-- login row -->
-      <div id="aLogin" class="row">
-        <input id="aPass" class="input" type="password" placeholder="รหัสผ่าน Admin"/>
-        <button id="aGo" class="btnP">เข้าสู่ระบบ</button>
-      </div>
-      <!-- toolbar -->
-      <div id="aTools" class="row" style="display:none;margin-top:6px">
-        <select id="fStatus" class="input">
+  <section id="secA" class="card" style="display:none">
+    <h3>👑 Admin Console</h3>
+
+    <div id="a-login" class="row" style="margin:10px 0 14px">
+      <input id="a-pass" class="filter" type="password" placeholder="กรอกรหัสผ่าน Admin" />
+      <button class="btn" onclick="adminLogin()">เข้าสู่ระบบ</button>
+    </div>
+
+    <div id="a-panel" style="display:none">
+      <div class="row" style="margin-bottom:8px">
+        <select id="filter-status" class="filter">
           <option value="">สถานะ: ทั้งหมด</option>
           <option>จองสินค้า</option>
           <option>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
-          <option>สินค้าถึงร้านค้าแล้ว</option>
+          <option>สินค้าถึงร้านแล้ว</option>
           <option>ลูกค้ารับสินค้าเรียบร้อย</option>
         </select>
-        <input id="fBooking" class="input" placeholder="เลขใบจอง (เช่น 102380)"/>
-        <input id="fFrom" class="input" placeholder="From Shop"/>
-        <button id="btnReload" class="btnS">รีเฟรชรายการ</button>
+        <input id="filter-booking" class="filter" placeholder="เลขใบจอง (เช่น 102380)" />
+        <select id="filter-shop" class="filter"><option value="">From Shop: ทั้งหมด</option></select>
+        <button class="btn secondary" onclick="loadOrders()">🔄 รีเฟรชรายการ</button>
       </div>
-      <div id="aMsg" class="muted" style="margin-top:10px"></div>
-      <div id="aResult" style="margin-top:8px"></div>
+
+      <div id="a-result" class="card" style="padding:0;border:none;box-shadow:none"></div>
     </div>
-  </div>
-</div>
+  </section>
+</main>
 
 <script>
-/* ================== CONFIG ================== */
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxxziOyC5TfTekQJuS5Gf5zwHHkw548EPjHgW7ji4gTlNnFGtFXoLTaFRwIiNoLERVpTQ/exec'; // <— ใส่ /exec ของ GAS
+/* ====== ตั้งค่า URL ของ GAS Web App (…/exec) ====== */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec'; // <<< แทนค่าเป็น URL ของคุณ
 
-/* ================== Helpers ================== */
-const qs = new URLSearchParams(location.search);
-const BOOKING = qs.get('booking');
-const TOKEN   = qs.get('token');
-const $ = id => document.getElementById(id);
-function show(el,on){ (typeof el==='string'?$(el):el).style.display=on?'block':'none'; }
-function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-async function apiGet(q){ const r=await fetch(WEB_APP_URL+'?'+q); return r.json(); }
+/* ====== Utils ====== */
+function switchTab(t){
+  const c = document.getElementById('secC'), a = document.getElementById('secA');
+  document.getElementById('tabC').classList.toggle('active', t==='c');
+  document.getElementById('tabA').classList.toggle('active', t==='a');
+  c.style.display = (t==='c')?'block':'none';
+  a.style.display = (t==='a')?'block':'none';
+}
+function fmtNum(n){ return Number(n||0).toLocaleString('th-TH'); }
+function fmtDate(d){ try{return new Date(d).toLocaleString('th-TH')}catch(e){return d} }
+function fmtDiscPercent(v){
+  const s = String(v ?? '').trim();
+  if (!s) return 'ไม่มี';
+  const m = s.match(/(\d+(?:\.\d+)?)\s*%/); if (m) return `${parseFloat(m[1])}%`;
+  const n = parseFloat(s); if (isNaN(n)) return s;
+  const pct = n>1 ? n : n*100;
+  return `${(+pct).toString().replace(/\.0+$/,'')}%`;
+}
+function apiJSONP(params){
+  const url = new URL(WEB_APP_URL);
+  Object.entries(params).forEach(([k,v])=> url.searchParams.set(k,v));
+  const cb = '__cb' + Math.random().toString(36).slice(2);
+  url.searchParams.set('callback', cb);
+  return new Promise((resolve,reject)=>{
+    window[cb] = (data)=>{ resolve(data); cleanup(); };
+    const s = document.createElement('script');
+    s.src = url.toString(); s.onerror=()=>{ reject(new Error('JSONP error')); cleanup(); };
+    document.body.appendChild(s);
+    function cleanup(){ delete window[cb]; s.remove(); }
+  });
+}
 
-/* ================== Tabs ================== */
-$('tabC').onclick=()=>{ $('tabC').classList.add('active');$('tabA').classList.remove('active');show('viewC',true);show('viewA',false); };
-$('tabA').onclick=()=>{ $('tabA').classList.add('active');$('tabC').classList.remove('active');show('viewC',false);show('viewA',true); };
-
-/* ================== Customer ================== */
-(function initCustomer(){
-  if(!BOOKING || !TOKEN){ show('cGate',true); $('cOut').innerHTML=''; return; }
-  $('cOut').innerHTML = `กำลังโหลดคำสั่งจอง #${esc(BOOKING)} …`;
-  // (จุดนี้คุณสามารถโหลดรายละเอียดคำสั่งจองด้วย booking+token ได้เหมือนเดิม)
-})();
-
-/* ================== Admin Login ================== */
-let adminKey = sessionStorage.getItem('adminKey') || '';
-const aLogin  = $('aLogin'), aTools = $('aTools'), aMsg = $('aMsg'), aRes = $('aResult');
-
-async function tryLogin(pass){
-  aMsg.textContent = 'กำลังตรวจสอบสิทธิ์…';
-  try{
-    const res = await apiGet('action=list&adminKey='+encodeURIComponent(pass));
-    if(!res || !res.ok){ aMsg.textContent='สิทธิ์ไม่ถูกต้อง'; return false; }
-    adminKey = pass;
-    sessionStorage.setItem('adminKey', pass);
-    aMsg.textContent='เข้าสู่ระบบสำเร็จ ✓';
-    aLogin.style.display='none';
-    aTools.style.display='flex';
-    await loadOrders();            // แสดงพาเนล + โหลดรายการทันที
-    return true;
-  }catch(e){
-    aMsg.textContent='เชื่อมต่อไม่ได้';
-    return false;
+/* ====== CUSTOMER: auto-open by token ====== */
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const u = new URL(location.href);
+  const booking = u.searchParams.get('booking');
+  const token   = u.searchParams.get('token');
+  const c = document.getElementById('c-result');
+  if (booking && token){
+    c.innerHTML = `<div class="alert">กำลังโหลดคำสั่งจอง #${booking} ...</div>`;
+    try{
+      const res = await apiJSONP({ action:'order', booking, token });
+      if(!res.ok || !res.data){ c.innerHTML = '<div class="alert error">❌ ลิงก์ไม่ถูกต้องหรือหมดอายุ</div>'; return; }
+      c.innerHTML = renderOrder(res.data,false);
+    }catch(e){
+      c.innerHTML = '<div class="alert error">❌ โหลดข้อมูลไม่สำเร็จ</div>';
+    }
   }
+});
+
+/* ====== ADMIN ====== */
+let ADMIN_KEY = '';
+let __ORDERS__ = [];
+
+async function adminLogin(){
+  const pass = document.getElementById('a-pass').value.trim();
+  if (pass !== '6515'){ alert('รหัสผ่านไม่ถูกต้อง'); return; }
+  ADMIN_KEY = pass;
+  document.getElementById('a-login').style.display='none';
+  document.getElementById('a-panel').style.display='block';
+  await loadOrders();
 }
-$('aGo').onclick = ()=> {
-  const pass = $('aPass').value.trim();
-  if(!pass){ aMsg.textContent='กรุณาใส่รหัสผ่าน'; return; }
-  tryLogin(pass);
-};
-
-if (adminKey){ // auto-login จาก sessionStorage
-  tryLogin(adminKey);
-}
-
-/* ================== Admin – list & render ================== */
-$('btnReload').onclick = () => loadOrders();
-
 async function loadOrders(){
-  aRes.innerHTML = '<div class="muted">กำลังโหลด…</div>';
+  const box = document.getElementById('a-result');
+  box.innerHTML = '<div class="alert">กำลังโหลด...</div>';
   try{
-    const res = await apiGet('action=list&adminKey='+encodeURIComponent(adminKey));
-    if(!res.ok){ aRes.innerHTML = '<div class="alert err">สิทธิ์ไม่ถูกต้อง</div>'; return; }
-    let data = res.data || [];
-    // filters
-    const fs = $('fStatus').value.trim();
-    const fb = $('fBooking').value.trim();
-    const ff = $('fFrom').value.trim();
-    data = data.filter(o =>
-      (!fs || o.status===fs) &&
-      (!fb || String(o.booking).includes(fb)) &&
-      (!ff || String(o.fromShop||'').toLowerCase().includes(ff.toLowerCase()))
-    );
-    if(!data.length){ aRes.innerHTML = '<div class="muted">ไม่พบรายการ</div>'; return; }
-    aRes.innerHTML = data.map(o=>renderOrder(o,true)).join('');
+    const res = await apiJSONP({ action:'list', adminKey:ADMIN_KEY });
+    if(!res.ok){ box.innerHTML = '<div class="alert error">❌ สิทธิ์ไม่ถูกต้อง</div>'; return; }
+    __ORDERS__ = res.data || [];
+    populateFromShopFilter(__ORDERS__);
+    applyAdminFilters();
   }catch(e){
-    aRes.innerHTML = '<div class="alert err">โหลดรายการไม่ได้</div>';
+    box.innerHTML = '<div class="alert error">❌ โหลดไม่สำเร็จ</div>';
   }
 }
+function unique(arr){ return [...new Set(arr.filter(Boolean))]; }
+function populateFromShopFilter(orders){
+  const sel = document.getElementById('filter-shop');
+  const shops = unique(orders.map(o=>o.fromShop));
+  sel.innerHTML = `<option value="">From Shop: ทั้งหมด</option>` + shops.map(s=>`<option>${s}</option>`).join('');
+  sel.onchange = applyAdminFilters;
+}
+function applyAdminFilters(){
+  const st   = document.getElementById('filter-status').value.trim();
+  const bq   = document.getElementById('filter-booking').value.trim();
+  const shop = document.getElementById('filter-shop').value.trim();
+  const box  = document.getElementById('a-result');
+  const list = __ORDERS__.filter(o=>{
+    if (st && o.status !== st) return false;
+    if (shop && o.fromShop !== shop) return false;
+    if (bq && !String(o.booking).includes(bq)) return false;
+    return true;
+  });
+  box.innerHTML = list.map(o=>renderOrder(o,true)).join('') || '<div class="alert">ไม่มีรายการ</div>';
+}
 
-function renderOrder(o, withControls){
-  const hasDisc     = o.items.some(it => (it.disc||'').toString().trim() !== '');
-  const hasDiscCode = o.items.some(it => (it.discCode||'').toString().trim() !== '');
-  const hasDiscRule = o.items.some(it => (it.discRule||'').toString().trim() !== '');
-
-  const thead = `
+function renderOrder(o, includeControls){
+  const rows = o.items.map(it=>`
     <tr>
-      <th>รหัสสินค้า</th>
-      <th>รายละเอียด</th>
-      <th class="right">ราคา</th>
-      <th class="right">จำนวน</th>
-      <th class="right">รวม</th>
-      ${hasDisc?'<th>PROMOTION %</th>':''}
-      ${hasDiscCode?'<th>PROMOTION CODE</th>':''}
-      ${hasDiscRule?'<th>CONDITION</th>':''}
-    </tr>`;
-
-  const tbody = o.items.map(it=>`
-    <tr>
-      <td>${esc(it.code||'-')}</td>
-      <td>${esc(it.desc||'-')}</td>
-      <td class="right">${Number(it.price||0).toLocaleString('th-TH')}</td>
-      <td class="right">${Number(it.qty||0).toLocaleString('th-TH')}</td>
-      <td class="right">${Number(it.amount||0).toLocaleString('th-TH')}</td>
-      ${hasDisc?`<td>${esc((it.disc||'ไม่มี').toString().replace(/^0\.\d+$/,(m)=>Math.round(parseFloat(m)*100)+'%'))}</td>`:''}
-      ${hasDiscCode?`<td>${esc(it.discCode||'ไม่มี')}</td>`:''}
-      ${hasDiscRule?`<td>${esc(it.discRule||'ไม่มี')}</td>`:''}
+      <td>${it.code}</td>
+      <td>${it.desc}</td>
+      <td class="num">${fmtNum(it.price)}</td>
+      <td class="num">${fmtNum(it.qty)}</td>
+      <td class="num">${fmtNum(it.amountNet ?? it.amount)}</td>
+      <td>${fmtDiscPercent(it.disc)}</td>
+      <td>${it.discCode || 'ไม่มี'}</td>
+      <td>${it.discRule || 'ไม่มี'}</td>
     </tr>`).join('');
 
-  const controls = withControls ? `
-    <div class="row" style="margin-top:12px">
-      <select id="st-${o.booking}" class="input">
-        <option ${o.status==='จองสินค้า'?'selected':''}>จองสินค้า</option>
-        <option ${o.status.startsWith('จัดส่งสินค้า')?'selected':''}>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
-        <option ${o.status==='สินค้าถึงร้านค้าแล้ว'?'selected':''}>สินค้าถึงร้านค้าแล้ว</option>
-        <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย'?'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
+  const head = `
+    <div class="row" style="justify-content:space-between">
+      <div><b>Booking #${o.booking}</b>
+        <span class="pill">${o.status}</span>
+      </div>
+      <div class="mut">เส้นทางร้าน: ${o.fromShop || '-'} → ${o.toShop || '-'}</div>
+    </div>
+    <div class="mut">อัปเดตล่าสุด: ${o.statusAt || '-'}</div>`;
+
+  const table = `
+    <table>
+      <thead>
+        <tr>
+          <th>รหัสสินค้า</th><th>รายละเอียด</th><th>ราคา</th><th>จำนวน</th>
+          <th>รวม</th><th>PROMOTION %</th><th>PROMOTION CODE</th><th>CONDITION</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="4" class="num"><b>ยอดรวมทั้งหมด</b></td><td class="num"><b>${fmtNum(o.total)}</b></td><td colspan="3"></td></tr></tfoot>
+    </table>`;
+
+  const ctrl = includeControls ? `
+    <div class="row" style="gap:10px;margin-top:10px">
+      <select id="st-${o.booking}" class="filter">
+        <option ${o.status==='จองสินค้า' ? 'selected':''}>จองสินค้า</option>
+        <option ${o.status==='จัดส่งสินค้า (อย่างน้อย 7 วัน)' ? 'selected':''}>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
+        <option ${o.status==='สินค้าถึงร้านแล้ว' ? 'selected':''}>สินค้าถึงร้านแล้ว</option>
+        <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย' ? 'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
       </select>
-      <button class="btnP" onclick="updateStatus('${o.booking}')">อัปเดตสถานะ</button>
+      <button class="btn" onclick="updateStatus('${o.booking}')">💾 อัปเดตสถานะ</button>
+      <button class="btn secondary" onclick="printOrder('${o.booking}','thermal')">🧾 พิมพ์ใบจอง (Thermal)</button>
+      <button class="btn secondary" onclick="printOrder('${o.booking}','a4')">🖨️ พิมพ์ A4</button>
     </div>` : '';
 
-  return `
-  <div class="order">
-    <div class="order-hd">
-      <div><b>📋 Booking #${esc(o.booking)}</b> · <span class="badge">${esc(o.status)}</span></div>
-      <div class="muted">เส้นทางร้าน: ${esc(o.fromShop||'-')} → ${esc(o.toShop||'-')} · อัปเดต: ${esc(o.statusAt||'-')}</div>
-    </div>
-    <div class="bd">
-      <table>
-        <thead>${thead}</thead>
-        <tbody>${tbody}</tbody>
-        <tfoot>
-          <tr>
-            <td colspan="${5 + (hasDisc?1:0) + (hasDiscCode?1:0) + (hasDiscRule?1:0)}" class="right"><b>ยอดรวมทั้งหมด</b></td>
-            <td class="right"><b>${Number(o.total||0).toLocaleString('th-TH')} บาท</b></td>
-          </tr>
-        </tfoot>
-      </table>
-      ${controls}
-    </div>
-  </div>`;
+  return `<div class="order-card" data-booking="${o.booking}">${head}${table}${ctrl}</div>`;
 }
 
 async function updateStatus(booking){
   const st = document.getElementById('st-'+booking).value;
+  const box = document.querySelector(`.order-card[data-booking="${booking}"]`);
+  const info = document.createElement('div');
+  info.className='mut'; info.textContent='กำลังอัปเดต...'; box.appendChild(info);
   try{
-    const res = await apiGet(`action=update&adminKey=${encodeURIComponent(adminKey)}&booking=${encodeURIComponent(booking)}&status=${encodeURIComponent(st)}`);
-    if(res && res.ok){ alert('อัปเดตแล้ว (มีอีเมลแจ้งลูกค้า)'); loadOrders(); }
-    else{ alert('อัปเดตไม่สำเร็จ'); }
-  }catch(e){ alert('เชื่อมต่อไม่ได้'); }
+    const res = await apiJSONP({ action:'update', adminKey:ADMIN_KEY, booking, status:st });
+    info.remove();
+    if(!res.ok){ alert('อัปเดตไม่สำเร็จ'); return; }
+    await loadOrders();
+  }catch(e){ info.remove(); alert('ผิดพลาด'); }
 }
 
-/* เปิดพาเนลแอดมินทันทีถ้าใส่ ?admin=1 หรือ #admin */
-if (location.search.includes('admin=1') || location.hash.toLowerCase()==='#admin'){ $('tabA').click(); }
+function printOrder(booking, mode){
+  const src = document.querySelector(`.order-card[data-booking="${booking}"]`);
+  const w = window.open('', '_blank');
+  w.document.write(`
+    <html><head><title>Print #${booking}</title>
+    <style>body{font-family:system-ui,Arial;padding:16px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #ddd;padding:6px}
+    </style></head><body>${src.outerHTML}</body></html>`);
+  w.document.close(); w.focus(); w.print();
+}
 </script>
 </body>
 </html>
