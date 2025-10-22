@@ -440,8 +440,30 @@ async function updateStatus(booking){
 /* ===================== Init ===================== */
 ensureLogin();
 loadCustomer();
+<div class="order-card" id="card-{{booking}}">
+  <!-- … เนื้อหาการ์ด … -->
+
+  <div class="print-controls no-print">
+    <button type="button"
+            class="btn btn-outline-secondary"
+            data-format="thermal"
+            data-booking="{{booking}}"
+            onclick="handlePrintBtn(this)">
+      พิมพ์ใบจอง (Thermal)
+    </button>
+
+    <button type="button"
+            class="btn btn-outline-secondary"
+            data-format="a4"
+            data-booking="{{booking}}"
+            onclick="handlePrintBtn(this)">
+      พิมพ์ A4
+    </button>
+  </div>
+</div>
 
 </script>
 </body>
 </html>
+
 
