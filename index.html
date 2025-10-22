@@ -14,6 +14,18 @@
     --line:#e2e8f0;
     --accent:#0b5bd3;
   }
+  /* === Boost Booking No. size === */
+.booking-number{
+  font-size: clamp(28px, 5vw, 48px);  /* มือถือ→เดสก์ท็อป */
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: .5px;
+}
+
+@media print{
+  .booking-number{ font-size: 48pt; } /* ชัดตอนสั่งพิมพ์ */
+}
+
   *{box-sizing:border-box}
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#1f2937;min-height:100vh;margin:0}
   header{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:16px 20px;position:sticky;top:0;z-index:10}
@@ -393,3 +405,4 @@ loadCustomerByLink();
 </script>
 </body>
 </html>
+
