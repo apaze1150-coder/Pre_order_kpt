@@ -1,469 +1,287 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Toy City – Order Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- ===== Theme ===== -->
 <style>
-:root{
-  --bg:#f6f7fb;
-  --card:#ffffff;
-  --title:#151a2d;
-  --text:#2c334a;
-  --sub:#66708a;
-  --line:#e8eaf2;
-  --brand:#5c6cff;
-  --brand-2:#6e87ff;
-  --ok:#22c55e;
-  --warn:#fb923c;
-  --danger:#ef4444;
-  --pill:#eef2ff;
-  --pill2:#f1f5f9;
-}
-*{box-sizing:border-box}
-body{
-  margin:0; background:var(--bg); color:var(--text);
-  font:15px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial;
-}
-.container{max-width:1080px;margin:28px auto;padding:0 14px}
-.row{display:flex;gap:10px;align-items:center}
-.space{flex:1}
-h1{margin:0 0 14px;font-size:22px;color:var(--title)}
-.card{
-  background:var(--card); border:1px solid var(--line);
-  border-radius:14px; padding:14px 16px; box-shadow:0 2px 0 rgba(0,0,0,.03)
-}
-.header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.brand{display:flex;align-items:center;gap:8px;font-weight:700}
-.brand i{font-style:normal;font-size:22px}
-.tab-btn{
-  background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;
-  cursor:pointer; color:var(--text)
-}
-.tab-btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
-select,input{
-  background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;
-  outline:none; color:var(--text)
-}
-input[type="search"], input[type="text"], input[type="password"]{min-width:200px}
-.btn{
-  background:var(--brand);color:#fff;border:0;border-radius:10px;padding:8px 12px;
-  cursor:pointer
-}
-.btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
-.btn.warn{background:var(--warn);color:#111}
-.btn.ok{background:var(--ok)}
-.muted{color:var(--sub);font-size:13px}
-.right{text-align:right}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
-.table thead th{background:#f6f7ff;color:#3b49a7}
-.badge{
-  display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;
-  background:var(--pill);color:#3b49a7;border:1px solid #dfe3ff
-}
-.badge.ok{background:#ecfdf5;border-color:#c3f0db;color:#0f8a4b}
-.badge.warn{background:#fff7ed;border-color:#ffe3c4;color:#b45309}
-.badge.danger{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+  :root{
+    --bg:#f6f7fb;
+    --card:#fff;
+    --pri:#5b5bd6;
+    --ink:#202235;
+    --mut:#6b6f85;
+    --bd:#e8e9f1;
+    --ok:#2fbf71;
+    --warn:#ffb100;
+    --danger:#ea5252;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Prompt,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+  .wrap{max-width:1080px;margin:28px auto;padding:0 16px}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .brand{font-weight:700;font-size:22px;display:flex;gap:10px;align-items:center}
+  .brand i{font-style:normal;background:var(--pri);color:#fff;border-radius:10px;padding:6px 8px}
+  .seg{display:flex;gap:8px}
+  .seg .btn{padding:10px 14px;border:1px solid var(--bd);background:#fff;border-radius:10px;color:var(--ink);cursor:pointer}
+  .seg .btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
 
-/* Timeline */
-.tc-timeline{display:flex;gap:14px;margin:8px 0}
-.tc-step{display:flex;flex-direction:column;align-items:center;gap:6px;width:90px}
-.tc-icon{
-  width:36px;height:36px;border-radius:999px;border:2px solid var(--line);
-  display:grid;place-items:center;background:#fff;color:#9aa3ba;font-weight:700
-}
-.tc-step.active .tc-icon{border-color:var(--brand);color:var(--brand);box-shadow:0 0 0 4px #eef2ff}
-.tc-step .lbl{font-size:12px;color:var(--sub);text-align:center}
-.tc-step .ts{font-size:11px;color:#9aa3ba;text-align:center}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;box-shadow:0 10px 20px rgba(32,34,53,.05);margin:14px 0}
+  .card .head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)}
+  .bno{font-weight:700}
+  .head .meta{display:flex;gap:14px;align-items:center;color:var(--mut);font-size:13px}
+  .head .meta .chip{background:#eef1ff;color:#3b44b1;border-radius:999px;padding:6px 10px;font-weight:600}
+  .qrcode{width:56px;height:56px;border-radius:10px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center}
+  .qrcode img{width:48px;height:48px}
 
-/* Admin extras */
-.qr {
-  width:64px;height:64px;border:1px solid var(--line);border-radius:10px;
-  background:#fff;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.04)
-}
-.custline{margin-top:6px;color:var(--sub);font-size:14px}
-.header-left{display:flex;align-items:center;gap:12px}
-.grow{flex:1}
-.hr{height:1px;background:var(--line);margin:10px 0}
-.small{font-size:12px;color:var(--sub)}
+  .box{padding:12px 16px}
+  .cust{display:flex;gap:10px;align-items:center;color:#374}
+  .cust small{color:var(--mut)}
+  .grid{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+  .timeline{display:flex;gap:28px;align-items:flex-start;margin-top:10px}
+  .step{text-align:center;min-width:72px}
+  .step .ico{width:46px;height:46px;border-radius:999px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;margin:0 auto 6px}
+  .step.active .ico{border-color:var(--pri);background:linear-gradient(#fff,#eef1ff)}
+  .step .cap{font-size:12px;color:var(--mut)}
+  .step .ts{font-size:10px;color:#9aa}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
+  th{background:#f3f4fb;font-weight:600;color:#3a3d58}
+  tfoot td{font-weight:700}
+  .right{text-align:right}
+  .mut{color:var(--mut)}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .select, .btn{padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:#fff;cursor:pointer}
+  .btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+  .btn.link{background:#fff;color:#365; border-color:var(--bd)}
+  .no-print{ /* สิ่งที่ไม่ต้องการให้ติดไปในหน้าพิมพ์ */ }
+
+  @media print{
+    body{background:#fff}
+    .no-print{display:none!important}
+  }
 </style>
 </head>
 <body>
-<div class="container">
+  <div class="wrap">
+    <header>
+      <div class="brand"><i>🎮</i> Toy City – Order Portal</div>
+      <div class="seg no-print">
+        <button class="btn" onclick="switchMode('customer')">สำหรับลูกค้า</button>
+        <button class="btn pri" onclick="switchMode('admin')">สำหรับ Admin</button>
+      </div>
+    </header>
 
-  <!-- ===== Top header ===== -->
-  <div class="header">
-    <div class="brand"><i>🎮</i> Toy City – Order Portal</div>
-    <div class="space"></div>
-    <button id="btnCust" class="tab-btn primary" onclick="switchTab('cust')">สำหรับลูกค้า</button>
-    <button id="btnAdmin" class="tab-btn" onclick="switchTab('admin')">สำหรับ Admin</button>
+    <div id="app"></div>
   </div>
 
-  <!-- ===== Customer view ===== -->
-  <div id="custView" class="card" style="display:block">
-    <h1>🔎 ติดตามสถานะคำสั่งจอง</h1>
-    <div id="custBox" class="muted">เพื่อความปลอดภัย โปรดเปิดลิงก์จากอีเมลยืนยันที่เราได้ส่งให้คุณเท่านั้น</div>
-  </div>
+<script>
+/* ================= CONFIG ================= */
+const GAS_BASE   = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec';
+const ADMIN_PASS = '6515';
 
-  <!-- ===== Admin view ===== -->
-  <div id="adminView" style="display:none">
-    <!-- Login card -->
-    <div id="loginCard" class="card">
-      <div class="row">
-        <b>🔐 Admin Console</b>
+/* -------------- Utils -------------- */
+const fmtNum = n => Number(n||0).toLocaleString('th-TH');
+const esc = s => String(s ?? '').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+/* -------------- Data -------------- */
+async function fetchOrders(){
+  const url = `${GAS_BASE}?action=list&adminKey=${encodeURIComponent(ADMIN_PASS)}&callback=?`;
+  // ใช้ JSONP เพื่อเลี่ยง CORS (รองรับจาก GAS)
+  return new Promise((resolve) => {
+    const cbName = 'cb'+Math.random().toString(36).slice(2);
+    window[cbName] = (res)=>{ delete window[cbName]; s.remove(); resolve(res||{}); };
+    const s = document.createElement('script');
+    s.src = url.replace('=?', '=' + cbName);
+    document.body.appendChild(s);
+  });
+}
+
+/* -------------- Render -------------- */
+function renderApp(orders){
+  const host = document.getElementById('app');
+  if (!orders || !orders.ok) {
+    host.innerHTML = `<div class="card"><div class="box">โหลดข้อมูลไม่สำเร็จ</div></div>`;
+    return;
+  }
+  host.innerHTML = orders.data.map(renderOrderCard).join('');
+}
+
+function renderOrderCard(o){
+  const qr = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(o.booking)}`;
+  const shopPath = (o.fromShop||'-') + ' → ' + (o.toShop||'-');
+
+  const steps = [
+    {key:'จองสินค้า',    label:'จอง',     icon:'📦'},
+    {key:'เตรียมสินค้า',  label:'เตรียม',  icon:'🧰'},
+    {key:'จัดส่ง',        label:'จัดส่ง',  icon:'🚚'},
+    {key:'สินค้าถึงร้านแล้ว',label:'ถึงร้าน', icon:'🏪'},
+    {key:'ลูกค้ารับสินค้าเรียบร้อย',label:'สำเร็จ', icon:'✅'}
+  ];
+  const activeIdx = Math.max(0, steps.findIndex(s=>o.status && o.status.indexOf(s.key) >= 0));
+
+  const rows = o.items.map(it => `
+    <tr>
+      <td class="mut">${esc(it.code)}</td>
+      <td>${esc(it.desc)}</td>
+      <td class="right">${fmtNum(it.price)}</td>
+      <td class="right">${fmtNum(it.qty)}</td>
+      <td class="right">${fmtNum(it.amount)}</td>
+      <td class="mut">${esc(it.disc || 'ไม่มี')}</td>
+      <td class="mut">${esc(it.discCode || 'ไม่มี')}</td>
+      <td class="mut">${esc(it.discRule || 'ไม่มี')}</td>
+    </tr>
+  `).join('');
+
+  return `
+  <div class="card order-card" id="card-${esc(o.booking)}">
+    <div class="head">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="qrcode" title="สแกนเพื่อลงเลขใบจอง"><img src="${qr}" alt="QR ${esc(o.booking)}"></div>
+        <div>
+          <div class="bno">Booking #${esc(o.booking)}</div>
+          <div class="meta">
+            <span class="chip">${esc(o.status || '-')}</span>
+            <span class="mut">อัปเดตล่าสุด: ${esc(o.statusAt || '-')}</span>
+          </div>
+        </div>
       </div>
-      <div class="row" style="margin-top:6px">
-        <input id="adminPass" type="password" placeholder="รหัสผ่าน" />
-        <button class="btn" onclick="login()">เข้าสู่ระบบ</button>
-      </div>
-      <div id="loginOK" class="small" style="display:none;margin-top:6px">เข้าสู่ระบบสำเร็จ ✓</div>
+      <div class="mut">${esc(shopPath)}</div>
     </div>
 
-    <!-- Console -->
-    <div id="console" class="card" style="margin-top:12px;display:none">
-      <div class="row" style="flex-wrap:wrap;gap:8px 10px">
-        <select id="filter-status">
-          <option value="">สถานะ: ทั้งหมด</option>
+    <div class="box">
+      <div class="cust">
+        ลูกค้า: <b>${esc(o.customer.name)} ${esc(o.customer.last)}</b>
+        <span style="margin-left:8px;color:#667">•</span>
+        <a href="mailto:${esc(o.customer.email)}">${esc(o.customer.email)}</a>
+        <span style="margin-left:8px;color:#667">•</span>
+        ${esc(o.customer.tel)}
+      </div>
+
+      <div class="timeline">
+        ${steps.map((s,idx)=>`
+          <div class="step ${idx<=activeIdx?'active':''}">
+            <div class="ico">${s.icon}</div>
+            <div class="cap">${s.label}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>รหัส</th><th>สินค้า</th>
+            <th class="right">ราคา</th><th class="right">จำนวน</th>
+            <th class="right">รวม</th>
+            <th>PROMOTION %</th><th>PROMOTION CODE</th><th>CONDITION</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="right">ยอดรวมทั้งหมด</td>
+            <td class="right">${fmtNum(o.total)}</td>
+            <td colspan="3"></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="controls no-print">
+        <select class="select" id="sel-${esc(o.booking)}">
           <option>จองสินค้า</option>
-          <option>กำลังจัดเตรียมสินค้า</option>
-          <option>จัดส่งสินค้า(อย่างน้อย 7 วัน)</option>
+          <option>เตรียมสินค้า</option>
+          <option>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
           <option>สินค้าถึงร้านแล้ว</option>
           <option>ลูกค้ารับสินค้าเรียบร้อย</option>
         </select>
+        <button class="btn pri" onclick="alert('เดโม: อัปเดตสถานะถูกกด')">อัปเดตสถานะ</button>
 
-        <input id="filter-booking" type="search" placeholder="เลขใบจอง (เช่น 102380)" />
-        <select id="filter-shop"><option value="">From Shop: ทั้งหมด</option></select>
-
-        <div class="space"></div>
-        <button class="btn ghost" onclick="loadAdmin()">รีเฟรชรายการ</button>
+        <button class="btn" data-format="thermal" data-booking="${esc(o.booking)}" onclick="handlePrintBtn(this)">
+          พิมพ์ใบจอง (Thermal)
+        </button>
+        <button class="btn" data-format="a4" data-booking="${esc(o.booking)}" onclick="handlePrintBtn(this)">
+          พิมพ์ A4
+        </button>
       </div>
-
-      <div id="adminList" style="margin-top:12px"></div>
     </div>
-  </div>
-
-</div>
-
-<!-- ===== App script ===== -->
-<script>
-/* ===================== CONFIG ===================== */
-// !!! ใส่ URL ของ Web App (GAS) ของคุณที่นี่ !!!
-const API = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec'; // eg. https://script.google.com/macros/s/XXXX/exec
-const ADMIN_PASS = '6515';
-
-/* ===================== Helpers ===================== */
-const $ = sel => document.querySelector(sel);
-const qs = new URLSearchParams(location.search);
-const fmtTH = new Intl.NumberFormat('th-TH');
-const money = n => fmtTH.format(Number(n||0));
-
-function switchTab(tab){
-  const cust = $('#custView'), admin = $('#adminView');
-  const bC = $('#btnCust'), bA = $('#btnAdmin');
-  if (tab==='admin'){
-    cust.style.display='none'; admin.style.display='';
-    bC.classList.remove('primary'); bA.classList.add('primary');
-  }else{
-    cust.style.display=''; admin.style.display='none';
-    bA.classList.remove('primary'); bC.classList.add('primary');
-  }
+  </div>`;
 }
 
-/* ส่วนลด → ป้าย % */
-function discLabel(v){
-  if (v==null || v==='') return 'ไม่มี';
-  const s = String(v).trim().toLowerCase();
-  const m = s.match(/(\d+(?:\.\d+)?)\s*%/);
-  if (m) return `${+m[1]}%`;
-  const n = parseFloat(s);
-  if (isNaN(n)) return s;
-  return n>1 ? `${n}%` : `${Math.round(n*100)}%`;
+/* -------------- Print (A4 & Thermal) -------------- */
+function handlePrintBtn(btn){
+  const booking = btn.dataset.booking;
+  const format  = (btn.dataset.format || 'a4').toLowerCase();
+  printBooking(booking, format);
 }
 
-/* สร้าง URL QR */
-function qrUrl(text){
-  return 'https://quickchart.io/qr?text=' + encodeURIComponent(text) + '&size=96&margin=1';
-}
-/* คลิก QR เพื่อค้นหาไว */
-function setFilter(booking){
-  const inp = $('#filter-booking');
-  if (inp){
-    inp.value = booking;
-    loadAdmin();
-    inp.focus(); inp.select();
-  }
-}
+function printBooking(booking, format='a4'){
+  const card = document.querySelector(`#card-${CSS.escape(booking)}`);
+  if (!card) { alert('ไม่พบการ์ดของบิลนี้'); return; }
 
-/* ===================== Customer View ===================== */
-async function loadCustomer(){
-  const booking = qs.get('booking');
-  const token   = qs.get('token');
-  const box = $('#custBox');
+  // clone เฉพาะการ์ด แล้วลบคอนโทรลที่ไม่ต้องไปกับหน้าพิมพ์
+  const clone = card.cloneNode(true);
+  clone.querySelectorAll('.no-print, .controls').forEach(el => el.remove());
+  clone.style.boxShadow = 'none';
+  clone.style.border = '0';
+  clone.style.margin = '0';
+  clone.style.borderRadius = '0';
 
-  if (!booking || !token){
-    box.innerHTML = 'เพื่อความปลอดภัย โปรดเปิดลิงก์จากอีเมลยืนยันที่เราได้ส่งให้คุณเท่านั้น';
-    return;
-  }
-
-  try{
-    const res = await fetch(`${API}?action=order&booking=${encodeURIComponent(booking)}&token=${encodeURIComponent(token)}`);
-    const j = await res.json();
-    if (!j.ok || !j.data){ box.innerHTML = 'ไม่พบคำสั่งจองของคุณ หรือสิทธิ์ไม่ถูกต้อง'; return; }
-    const o = j.data;
-    box.innerHTML = renderOrderForCustomer(o);
-    buildTimeline(`tl-${o.booking}`, o.statusAt, o.status);
-  }catch(e){
-    box.innerHTML = 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
-  }
-}
-
-function renderOrderForCustomer(o){
-  const items = (o.items||[]).map(it=>`
-    <tr>
-      <td>${it.code||''}</td>
-      <td>${it.desc||''}</td>
-      <td class="right">${money(it.price)}</td>
-      <td class="right">${money(it.qty)}</td>
-      <td class="right">
-        ${Number(it.amountNet||0) < Number(it.amount||0)
-          ? `<span class="muted" style="text-decoration:line-through">${money(it.amount)}</span> → <b>${money(it.amountNet)}</b>`
-          : `<b>${money(it.amountNet ?? it.amount)}</b>`}
-      </td>
-      <td>${discLabel(it.disc)}</td>
-      <td>${it.discCode||'ไม่มี'}</td>
-      <td>${it.discRule||'ไม่มี'}</td>
-    </tr>`).join('');
-
-  return `
-    <div class="row" style="justify-content:space-between;align-items:center">
-      <div class="header-left">
-        <div><b>Booking #${o.booking}</b> <span class="badge">${o.status}</span></div>
-        <img class="qr" src="${qrUrl(o.booking)}" alt="QR ${o.booking}">
-      </div>
-      <div class="muted">เส้นทางร้าน: ${o.fromShop||'-'} → ${o.toShop||'-'}</div>
-    </div>
-
-    <div class="custline">
-      ลูกค้า: <b>${(o.customer?.name||'') + ' ' + (o.customer?.last||'')}</b>
-      &nbsp;•&nbsp; <a href="mailto:${o.customer?.email||''}">${o.customer?.email||'-'}</a>
-      &nbsp;•&nbsp; ${o.customer?.tel||'-'}
-    </div>
-    <div class="muted">อัปเดตล่าสุด: ${o.statusAt||'-'}</div>
-
-    <div id="tl-${o.booking}" class="tc-timeline"></div>
-
-    <table class="table" style="margin-top:6px">
-      <thead>
-        <tr>
-          <th>รหัส</th><th>สินค้า</th>
-          <th class="right">ราคา</th><th class="right">จำนวน</th>
-          <th class="right">รวมสุทธิ</th><th>%</th><th>CODE</th><th>COND.</th>
-        </tr>
-      </thead>
-      <tbody>${items}</tbody>
-      <tfoot>
-        <tr>
-          <td colspan="7" class="right"><b>ยอดรวมทั้งหมด</b></td>
-          <td class="right"><b>${money(o.total)}</b></td>
-        </tr>
-      </tfoot>
-    </table>
+  // CSS เฉพาะหน้าพิมพ์
+  const printCss = `
+    *{box-sizing:border-box;font-family: Prompt, "TH Sarabun New", Arial, sans-serif}
+    body{margin:0;padding:${format==='thermal' ? '8px' : '14px'}}
+    .order-card{box-shadow:none;border:0;margin:0;padding:0}
+    table{width:100%;border-collapse:collapse;font-size:${format==='thermal' ? '11pt' : '12pt'}}
+    th,td{border:1px solid #bbb;padding:${format==='thermal' ? '4px 6px' : '6px 8px'}}
+    tfoot td{font-weight:700}
+    .qrcode{border:0}
+    @media print{ .no-print{display:none!important} }
+    ${format==='thermal'
+      ? `@page{size:80mm auto;margin:0} body{width:80mm}`
+      : `@page{size:A4;margin:12mm}`}
   `;
-}
 
-/* ไทม์ไลน์ (ไอคอนแบบง่าย) */
-function buildTimeline(elId, statusAt, status){
-  const steps = [
-    {key:'จองสินค้า', label:'จอง', icon:'📝'},
-    {key:'กำลังจัดเตรียมสินค้า', label:'เตรียม', icon:'📦'},
-    {key:'จัดส่งสินค้า', label:'จัดส่ง', icon:'🚚'},           // ใช้ startsWith
-    {key:'สินค้าถึงร้านแล้ว', label:'ถึงร้าน', icon:'🏬'},
-    {key:'ลูกค้ารับสินค้าเรียบร้อย', label:'สำเร็จ', icon:'✅'},
-  ];
-  let activeIdx = 0;
-  if (status.startsWith('จัดส่งสินค้า')) activeIdx = 2;
-  else activeIdx = steps.findIndex(s=>s.key===status);
-  if (activeIdx<0) activeIdx = 0;
+  const html = `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Booking #${esc(booking)}</title>
+        <style>${printCss}</style>
+      </head>
+      <body>${clone.outerHTML}</body>
+    </html>
+  `;
 
-  const ts = statusAt || '';
-  const html = steps.map((s,i)=>`
-    <div class="tc-step ${i<=activeIdx?'active':''}">
-      <div class="tc-icon">${s.icon}</div>
-      <div class="lbl">${s.label}</div>
-      <div class="ts">${i===activeIdx? ts : ''}</div>
-    </div>`).join('');
-  const el = document.getElementById(elId);
-  if (el) el.innerHTML = html;
-}
-
-/* ===================== Admin ===================== */
-function login(){
-  const val = $('#adminPass').value.trim();
-  if (val === ADMIN_PASS){
-    localStorage.setItem('toycity_admin', '1');
-    $('#loginOK').style.display='block';
-    $('#console').style.display='';
-    loadAdmin();
-  }else{
-    alert('รหัสผ่านไม่ถูกต้อง');
-  }
-}
-function ensureLogin(){
-  if (localStorage.getItem('toycity_admin')==='1'){
-    $('#loginOK').style.display='block';
-    $('#console').style.display='';
-  }
-}
-function statusBadge(t){
-  let cls='badge';
-  if (/สำเร็จ|รับสินค้า/.test(t)) cls+=' ok';
-  else if (/จัดส่ง/.test(t)) cls+=' warn';
-  else if (/ยกเลิก/.test(t)) cls+=' danger';
-  return `<span class="${cls}">${t}</span>`;
-}
-
-async function loadAdmin(){
-  if (!localStorage.getItem('toycity_admin')) return;
-  const q = new URLSearchParams({
-    action:'list', adminKey: ADMIN_PASS
+  // ใช้ iframe ลับเพื่อเลี่ยง popup blocker
+  const iframe = document.createElement('iframe');
+  Object.assign(iframe.style, {
+    position:'fixed',right:'0',bottom:'0',width:'0',height:'0',border:'0',visibility:'hidden'
   });
-  const res = await fetch(`${API}?${q.toString()}`);
-  const j = await res.json();
-  if (!j.ok){ alert('โหลดข้อมูลไม่สำเร็จ'); return; }
+  document.body.appendChild(iframe);
 
-  const all = j.data || [];
-  // เติม From Shop dropdown
-  const shopSel = $('#filter-shop');
-  const currentShop = shopSel.value;
-  const shops = [...new Set(all.map(o=>o.fromShop).filter(Boolean))].sort();
-  shopSel.innerHTML = `<option value="">From Shop: ทั้งหมด</option>` +
-    shops.map(s=>`<option ${currentShop===s?'selected':''}>${s}</option>`).join('');
+  const w = iframe.contentWindow;
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  w.focus();
 
-  // กรอง
-  const st   = $('#filter-status').value.trim();
-  const bk   = $('#filter-booking').value.trim();
-  const fs   = $('#filter-shop').value.trim();
-
-  const filtered = all.filter(o=>{
-    if (st && o.status!==st && !(st.startsWith('จัดส่ง') && o.status.startsWith('จัดส่ง'))) return false;
-    if (bk && String(o.booking)!==bk) return false;
-    if (fs && String(o.fromShop)!==fs) return false;
-    return true;
-  });
-
-  const list = $('#adminList');
-  list.innerHTML = filtered.map(o=>{
-    const items = (o.items||[]).map(it=>`
-      <tr>
-        <td>${it.code||''}</td><td>${it.desc||''}</td>
-        <td class="right">${money(it.price)}</td>
-        <td class="right">${money(it.qty)}</td>
-        <td class="right">${money(it.amountNet||it.amount)}</td>
-        <td>${discLabel(it.disc)}</td><td>${it.discCode||'ไม่มี'}</td><td>${it.discRule||'ไม่มี'}</td>
-      </tr>`).join('');
-
-    const cust = o.customer || {};
-    return `
-      <div class="card" style="margin-bottom:12px">
-        <div class="row" style="justify-content:space-between;align-items:center">
-          <div class="header-left">
-            <div><b>Booking #${o.booking}</b> &nbsp; ${statusBadge(o.status)}</div>
-            <img class="qr" src="${qrUrl(o.booking)}" alt="QR ${o.booking}" title="คลิกเพื่อค้นหา"
-                 onclick="setFilter('${o.booking}')">
-          </div>
-          <div class="muted">เส้นทางร้าน: ${o.fromShop||'-'} → ${o.toShop||'-'}</div>
-        </div>
-
-        <div class="custline">
-          ลูกค้า: <b>${(cust.name||'') + ' ' + (cust.last||'')}</b>
-          &nbsp;•&nbsp; <a href="mailto:${cust.email||''}">${cust.email||'-'}</a>
-          &nbsp;•&nbsp; ${cust.tel||'-'}
-        </div>
-        <div class="muted">อัปเดตล่าสุด: ${o.statusAt||'-'}</div>
-
-        <div id="tl-${o.booking}" class="tc-timeline"></div>
-
-        <table class="table" style="margin-top:6px">
-          <thead>
-            <tr>
-              <th>รหัส</th><th>สินค้า</th>
-              <th class="right">ราคา</th><th class="right">จำนวน</th>
-              <th class="right">รวมสุทธิ</th><th>%</th><th>CODE</th><th>COND.</th>
-            </tr>
-          </thead>
-          <tbody>${items}</tbody>
-          <tfoot>
-            <tr>
-              <td colspan="7" class="right" style="font-weight:700">ยอดรวมทั้งหมด</td>
-              <td class="right" style="font-weight:700">${money(o.total)}</td>
-            </tr>
-          </tfoot>
-        </table>
-
-        <div class="row" style="margin-top:10px">
-          <select id="st-${o.booking}" class="grow">
-            <option ${o.status==='จองสินค้า'?'selected':''}>จองสินค้า</option>
-            <option ${o.status==='กำลังจัดเตรียมสินค้า'?'selected':''}>กำลังจัดเตรียมสินค้า</option>
-            <option ${o.status.startsWith('จัดส่งสินค้า')?'selected':''}>จัดส่งสินค้า(อย่างน้อย 7 วัน)</option>
-            <option ${o.status==='สินค้าถึงร้านแล้ว'?'selected':''}>สินค้าถึงร้านแล้ว</option>
-            <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย'?'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
-          </select>
-          <button class="btn" onclick="updateStatus('${o.booking}')">อัปเดตสถานะ</button>
-          <div class="space"></div>
-          <a class="btn ghost" href="${API}?action=html&booking=${o.booking}" target="_blank">พิมพ์ใบจอง (Thermal)</a>
-          <a class="btn ghost" href="${API}?action=html&booking=${o.booking}" target="_blank">พิมพ์ A4</a>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // สร้าง Timeline ให้แต่ละรายการ
-  filtered.forEach(o => buildTimeline(`tl-${o.booking}`, o.statusAt, o.status));
+  setTimeout(()=>{ try{ w.print(); } finally{ setTimeout(()=>iframe.remove(), 500); } }, 350);
 }
 
-async function updateStatus(booking){
-  const sel = document.getElementById(`st-${booking}`);
-  const status = sel ? sel.value : '';
-  if (!status) return;
-  const q = new URLSearchParams({
-    action:'update', adminKey: ADMIN_PASS, booking, status
-  });
-  const res = await fetch(`${API}?${q.toString()}`);
-  const j = await res.json();
-  if (j.ok) { loadAdmin(); alert('อัปเดตแล้ว และส่งอีเมลแจ้งลูกค้า'); }
-  else alert('อัปเดตไม่สำเร็จ');
+/* -------------- Boot -------------- */
+function switchMode(mode){
+  // เดโม: ปุ่มสลับโหมดเฉย ๆ
+  alert('สลับเป็นโหมด: ' + mode);
 }
-
-/* ===================== Init ===================== */
-ensureLogin();
-loadCustomer();
-<div class="order-card" id="card-{{booking}}">
-  <!-- … เนื้อหาการ์ด … -->
-
-  <div class="print-controls no-print">
-    <button type="button"
-            class="btn btn-outline-secondary"
-            data-format="thermal"
-            data-booking="{{booking}}"
-            onclick="handlePrintBtn(this)">
-      พิมพ์ใบจอง (Thermal)
-    </button>
-
-    <button type="button"
-            class="btn btn-outline-secondary"
-            data-format="a4"
-            data-booking="{{booking}}"
-            onclick="handlePrintBtn(this)">
-      พิมพ์ A4
-    </button>
-  </div>
-</div>
-
+(async function(){
+  const res = await fetchOrders();
+  renderApp(res);
+})();
 </script>
 </body>
 </html>
-
-
