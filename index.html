@@ -1,554 +1,57 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Toy City – Order Portal</title>
-<style>
-  :root{
-    --bg:#f1f5f9;          /* โทนพื้นหลังอ่อนแบบเวอร์ชันก่อน */
-    --primary:#1e3c72;     /* กรมท่า */
-    --primary2:#2a5298;    /* กรมท่าอ่อน */
-    --card:#ffffff;
-    --muted:#64748b;
-    --line:#e2e8f0;
-    --accent:#0b5bd3;
-  }
-  /* === Boost Booking No. size === */
-.booking-number{
-  font-size: clamp(28px, 5vw, 48px);  /* มือถือ→เดสก์ท็อป */
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: .5px;
-}
-
-@media print{
-  .booking-number{ font-size: 48pt; } /* ชัดตอนสั่งพิมพ์ */
-}
-
-  *{box-sizing:border-box}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#1f2937;min-height:100vh;margin:0}
-  header{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:16px 20px;position:sticky;top:0;z-index:10}
-  .wrap-head{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-  .logo{font-weight:800;font-size:20px;letter-spacing:.3px}
-  .wrap{max-width:1200px;margin:18px auto;padding:0 16px}
-  .card{background:var(--card);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:18px;margin-bottom:14px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .input{padding:10px 12px;border:2px solid var(--line);border-radius:10px;font-size:14px;min-width:200px;background:#fff}
-  .input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(11,91,211,.10)}
-  .btn{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-weight:700;cursor:pointer}
-  .btn.light{background:#fff;color:var(--primary);border:2px solid var(--primary)}
-  .ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.9)}
-  .muted{color:var(--muted);font-size:13px}
-  .order{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#fff}
-  .order-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  .head-left{display:flex;align-items:center;gap:10px}
-  .head-title{font-weight:800}
-  .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2)}
-  .badge.success{background:linear-gradient(135deg,#11998e,#38ef7d)}
-  .badge.warning{background:linear-gradient(135deg,#ff6a00,#ee0979)}
-  .qr{width:84px;height:84px;border:1px solid var(--line);border-radius:8px}
-  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;border-radius:10px;overflow:hidden}
-  th,td{padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px}
-  th{background:#f6f7ff;color:#2d3a6a;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-  .no-print{display:block}
-  @media print{ .no-print.global{display:none} }
-  .timeline{position:relative;margin:10px 0;padding-left:28px}
-  .timeline::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:4px;background:var(--line);border-radius:4px}
-  .titem{position:relative;margin:10px 0}
-  .titem::before{content:"";position:absolute;left:-22px;top:2px;width:16px;height:16px;border-radius:50%;background:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.2)}
-  .titem.done::before{background:#38a169}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-</style>
-</head>
-<body>
-<header class="no-print global">
-  <div class="wrap-head">
-    <div class="logo">🎮 Toy City – Order Portal</div>
-    <nav class="row">
-      <button class="ghost" onclick="showTab('tabCustomer')">🔍 ลูกค้า</button>
-      <button class="ghost" onclick="showTab('tabAdmin')">⚙️ Admin</button>
-    </nav>
-  </div>
- <!-- ① วาง "ภายใน <head> ... </head>" (ถ้ามีสไตล์เดิมอยู่แล้ว ข้ามส่วนนี้ได้) -->
-<style>
-  .kp-btn { padding:10px 14px; border:0; border-radius:12px; font-weight:700; cursor:pointer; }
-  .kp-btn-primary { background:#1e72ff; color:#fff; }
-  .kp-section { background:#0f2f5f; color:#fff; border-radius:16px; padding:18px; margin:16px 0; }
-  .kp-flex { display:flex; align-items:center; gap:12px; }
-  .kp-muted { opacity:.8; font-size:13px; }
-  .kp-iframe { width:100%; height:920px; border:0; border-radius:12px; background:#0b2545; }
-  @media (max-width: 640px){ .kp-iframe{ height:80vh; } }
-</style>
-
-<!-- ② วาง "บริเวณเมนู" ที่คุณอยากให้มีปุ่ม (เช่น ใน navbar) -->
-<button id="kpOpenRegister" class="kp-btn kp-btn-primary">วาง ลงทะเบียนจองสินค้า</button>
-
-<!-- ③ วาง "ตำแหน่งเนื้อหาหลัก" ที่อยากให้แสดงฟอร์ม (ใต้เมนูหรือท้ายหน้า) -->
-<section id="kpRegisterWrap" class="kp-section" hidden>
-  <div class="kp-flex">
-    <h2 style="margin:0;">ลงทะเบียนจองสินค้า</h2>
-    <span id="kpState" class="kp-muted">กำลังเตรียมแบบฟอร์ม...</span>
-  </div>
-
-  <!-- ถ้าโดเมนของคุณอนุญาตให้ฝัง iframe ได้ ฟอร์มจะมาแสดงตรงนี้ -->
-  <iframe id="kpRegisterIframe"
-          class="kp-iframe"
-          title="ลงทะเบียนจองสินค้า (Apps Script)"
-          src=""
-          loading="lazy"></iframe>
-
-  <!-- ปุ่มสำรอง เผื่อบางโดเมนบล็อกการฝัง -->
-  <div style="margin-top:10px;">
-    <a id="kpOpenFull" class="kp-btn" style="background:#1b3c7a; color:#fff;" target="_blank" rel="noopener">
-      เปิดเต็มหน้าจอ (เผื่อฝังไม่ได้)
-    </a>
-  </div>
-
-  <div class="kp-muted" style="margin-top:8px;">
-    * หมายเหตุ: ฟอร์มนี้จะบันทึกลงชีต <b>order</b> โดยแมปคอลัมน์
-    <b>B=OrderDate(วันนี้), E=Email, F=ชื่อ, G=นามสกุล, H=เบอร์มือถือ, I=Code, K=ราคา, L=จำนวน</b>.
-    คอลัมน์ <b>J/N/O/P/Q/R</b> เว้นว่างให้เติมทีหลังใน Google Sheet ได้เอง
-  </div>
-</section>
-
-<!-- ④ วาง "ก่อนปิด </body>" เพื่อให้ปุ่มทำงาน -->
-<script>
-  (function(){
-    // ใส่ URL Web App ของคุณที่นี่
-    const KP_EXEC_URL = 'https://script.google.com/macros/s/AKfycby9kitmsDUTeNfb7LSVXV_wDLt58Y8aQtP2G0KG-ExS--2oWPTaeUmgod_7zvCwY_WpFw/exec';
-
-    const btnOpen   = document.getElementById('kpOpenRegister');
-    const wrap      = document.getElementById('kpRegisterWrap');
-    const iframe    = document.getElementById('kpRegisterIframe');
-    const openFull  = document.getElementById('kpOpenFull');
-    const state     = document.getElementById('kpState');
-
-    if (openFull) openFull.href = KP_EXEC_URL;
-
-    function openSection(){
-      if (wrap.hasAttribute('hidden')) {
-        wrap.removeAttribute('hidden');
-        if (iframe && !iframe.src) {
-          state.textContent = 'กำลังโหลดแบบฟอร์ม...';
-          iframe.src = KP_EXEC_URL;
-          // อัปเดตสถานะเมื่อโหลดเสร็จ
-          iframe.addEventListener('load', function onLoad(){
-            state.textContent = 'พร้อมบันทึก';
-            iframe.removeEventListener('load', onLoad);
-          });
-          // เผื่อโดนบล็อกการฝัง: แสดงปุ่มเปิดเต็มหน้าจอไว้เป็นทางเลือก
-          setTimeout(() => { if (state.textContent !== 'พร้อมบันทึก') state.textContent = 'ถ้าฟอร์มไม่แสดง กด "เปิดเต็มหน้าจอ" ได้เลย'; }, 2000);
-        }
-        wrap.scrollIntoView({behavior:'smooth', block:'start'});
-      } else {
-        wrap.setAttribute('hidden','');
-      }
-    }
-
-    if (btnOpen) btnOpen.addEventListener('click', openSection);
-
-    // รองรับ deep link ?view=register เพื่อเปิดส่วนฟอร์มอัตโนมัติ
-    const qs = new URLSearchParams(location.search);
-    if (qs.get('view') === 'register') openSection();
-  })();
-</script>
- 
-</header>
-
-<div class="wrap">
-
-  <!-- CUSTOMER -->
-  <div id="tabCustomer" class="card">
-    <h3>ติดตามสถานะคำสั่งจอง</h3>
-    <div class="muted" style="margin:6px 0">
-      เพื่อความปลอดภัย ลูกค้าต้องเข้าผ่านลิงก์ในอีเมลเท่านั้น (มีโทเคน)
-    </div>
-    <div id="c-box"></div>
-  </div>
-
-  <!-- ADMIN -->
-  <div id="tabAdmin" class="card" style="display:none">
-    <h3>Admin Console</h3>
-    <div id="adminLogin">
-      <div class="row" style="margin:6px 0">
-        <input id="a-pass" class="input" type="password" placeholder="รหัสผ่าน Admin" onkeypress="if(event.key==='Enter') adminLogin()">
-        <button class="btn" onclick="adminLogin()">🔐 เข้าสู่ระบบ</button>
-      </div>
-    </div>
-
-    <div id="adminPanel" style="display:none">
-      <!-- แถบค้นหา/กรอง -->
-      <div class="row no-print global" style="margin:8px 0">
-        <input id="q" class="input" placeholder="ค้นหา: ใบจอง / ชื่อ / อีเมล / โทร / To Shop">
-        <select id="fromShop" class="input">
-          <option value="">From Shop: ทั้งหมด</option>
-        </select>
-        <select id="toShop" class="input">
-          <option value="">To Shop: ทั้งหมด</option>
-        </select>
-        <button class="btn light" onclick="clearSearch()">ล้าง</button>
-        <button class="btn" onclick="loadOrders()">🔄 รีเฟรช</button>
-      </div>
-      <div id="a-result"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ====== CONFIG ====== */
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec'; // ← ใส่ /exec ของคุณ
-const ADMIN_PASS  = '6515';
-
-/* ====== STATE ====== */
-let adminKey = null;
-let ALL_ORDERS = [];
-
-/* ====== NAV ====== */
-function showTab(id){
-  document.getElementById('tabCustomer').style.display = (id==='tabCustomer')?'block':'none';
-  document.getElementById('tabAdmin').style.display    = (id==='tabAdmin')?'block':'none';
-}
-
-/* ====== UTIL ====== */
-const esc = s => String(s||'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
-const num = n => Number(n||0).toLocaleString('th-TH');
-function discLabel(v){
-  const s = String(v??'').trim();
-  if (!s) return 'ไม่มี';
-  const m = s.match(/(\d+(?:\.\d+)?)\s*%/);
-  if (m) return `${(+m[1]).toString().replace(/\.0+$/,'')}%`;
-  const n = parseFloat(s);
-  if (isNaN(n)) return s;
-  const pct = n>1 ? n : n*100;
-  return `${(+pct).toString().replace(/\.0+$/,'')}%`;
-}
-function badgeClass(st){
-  if (st.includes('จองสินค้า')) return 'warning';
-  if (st.includes('ถึงร้าน') || st.includes('รับสินค้า')) return 'success';
-  return '';
-}
-function qrUrl(text){
-  return `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(text)}`;
-}
-
-/* ====== CUSTOMER (PDPA link) ====== */
-function loadCustomerByLink(){
-  const p = new URLSearchParams(location.search);
-  const booking = p.get('booking');
-  const token   = p.get('token');
-  const cbox = document.getElementById('c-box');
-  if (!booking || !token){
-    cbox.innerHTML = '<div class="order">โปรดเปิดผ่านลิงก์ในอีเมล</div>';
-    return;
-  }
-  cbox.innerHTML = '<div class="order">กำลังโหลดคำสั่งจอง…</div>';
-  fetch(`${WEB_APP_URL}?action=order&booking=${encodeURIComponent(booking)}&token=${encodeURIComponent(token)}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if (!res.ok || !res.data){ cbox.innerHTML = '<div class="order">ไม่พบคำสั่งจอง</div>'; return; }
-      cbox.innerHTML = renderOrder(res.data,false,true);
-    })
-    .catch(()=> cbox.innerHTML = '<div class="order">เชื่อมต่อไม่ได้</div>');
-}
-
-/* ====== ADMIN ====== */
-function adminLogin(){
-  const pass = document.getElementById('a-pass').value.trim();
-  if (pass !== ADMIN_PASS){ alert('รหัสผ่านไม่ถูกต้อง'); return; }
-  adminKey = pass;
-  document.getElementById('adminLogin').style.display='none';
-  document.getElementById('adminPanel').style.display='block';
-  loadOrders();
-}
-
-async function fetchOrders(){
-  const url = `${WEB_APP_URL}?action=list&adminKey=${encodeURIComponent(adminKey)}`;
-  const res = await fetch(url).then(r=>r.json());
-  return res;
-}
-
-async function loadOrders(){
-  const box = document.getElementById('a-result');
-  box.innerHTML = '<div class="order">กำลังโหลด…</div>';
-  try{
-    const res = await fetchOrders();
-    if(!res.ok){ box.innerHTML = '<div class="order">สิทธิ์ไม่ถูกต้อง</div>'; return; }
-    ALL_ORDERS = res.data || [];
-    buildFilters(ALL_ORDERS);
-    renderList(ALL_ORDERS);
-    // bind
-    document.getElementById('q').oninput = applyFilter;
-    document.getElementById('fromShop').onchange = applyFilter;
-    document.getElementById('toShop').onchange   = applyFilter;
-  }catch(e){
-    box.innerHTML = '<div class="order">โหลดไม่ได้</div>';
-  }
-}
-
-function buildFilters(list){
-  const selF = document.getElementById('fromShop');
-  const selT = document.getElementById('toShop');
-  const setOpts = (sel, arr, label) => {
-    sel.innerHTML = `<option value="">${label}: ทั้งหมด</option>` +
-      arr.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
-  };
-  const Fs = [...new Set(list.map(o=>String(o.fromShop||'').trim()).filter(Boolean))].sort();
-  const Ts = [...new Set(list.map(o=>String(o.toShop  ||'').trim()).filter(Boolean))].sort();
-  setOpts(selF, Fs, 'From Shop');
-  setOpts(selT, Ts, 'To Shop');
-}
-
-function applyFilter(){
-  const q  = (document.getElementById('q')?.value || '').trim().toLowerCase();
-  const fs = (document.getElementById('fromShop')?.value || '').trim();
-  const ts = (document.getElementById('toShop')?.value   || '').trim();
-  let out = ALL_ORDERS.slice();
-
-  if (q){
-    out = out.filter(o=>{
-      const hay = [
-        o.booking,
-        o.customer?.name, o.customer?.last,
-        o.customer?.email, o.customer?.tel,
-        o.fromShop, o.toShop
-      ].map(x => String(x||'').toLowerCase());
-      return hay.some(x => x.includes(q));
-    });
-  }
-  if (fs) out = out.filter(o => String(o.fromShop||'').trim() === fs);
-  if (ts) out = out.filter(o => String(o.toShop  ||'').trim() === ts);
-
-  renderList(out);
-}
-function clearSearch(){
-  const q  = document.getElementById('q');  if (q) q.value = '';
-  const fs = document.getElementById('fromShop'); if (fs) fs.value = '';
-  const ts = document.getElementById('toShop');   if (ts) ts.value = '';
-  renderList(ALL_ORDERS);
-}
-
-/* ====== UPDATE (Admin) ====== */
-async function updateStatus(booking){
-  const st = document.getElementById('st-'+booking).value;
-  const url = `${WEB_APP_URL}?action=update&adminKey=${encodeURIComponent(adminKey)}&booking=${encodeURIComponent(booking)}&status=${encodeURIComponent(st)}`;
-  const res = await fetch(url).then(r=>r.json());
-  if(res.ok){ alert('อัปเดตแล้ว (ส่งอีเมลให้ลูกค้า)'); loadOrders(); } else { alert('อัปเดตไม่สำเร็จ'); }
-}
-
-/* ====== PRINT เฉพาะรายการ ====== */
-function printOrder(booking){
-  const el = document.getElementById('ord-'+booking);
-  if(!el){ alert('ไม่พบรายการนี้'); return; }
-  const w = window.open('', '_blank', 'width=900,height=900');
-  const styles = `
-    <style>
-      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#1f2937;margin:0;padding:20px}
-      .order{border:1px solid #e2e8f0;border-radius:12px;padding:14px;background:#fff}
-      .order-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-      .head-left{display:flex;align-items:center;gap:10px}
-      .head-title{font-weight:800}
-      .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2)}
-      table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;border-radius:10px;overflow:hidden}
-      th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;font-size:13px}
-      th{background:#f6f7ff;color:#2d3a6a;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-      .timeline{position:relative;margin:10px 0;padding-left:28px}
-      .timeline::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:4px;background:#e2e8f0;border-radius:4px}
-      .titem{position:relative;margin:10px 0}
-      .titem::before{content:"";position:absolute;left:-22px;top:2px;width:16px;height:16px;border-radius:50%;background:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.2)}
-      .titem.done::before{background:#38a169}
-      .qr{width:84px;height:84px;border:1px solid #e2e8f0;border-radius:8px}
-      .no-print{display:none}
-      .toolbar{display:none}
-    </style>`;
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>พิมพ์ Booking #${booking}</title>${styles}</head><body>${el.outerHTML}</body></html>`);
-  w.document.close(); w.focus(); w.print();
-}
-
-/* ====== RENDER ====== */
-function renderList(list){
-  const host = document.getElementById('a-result');
-  host.innerHTML = list.map(o=>renderOrder(o,true,false)).join('') || '<div class="order">ไม่พบรายการ</div>';
-}
-
-function renderOrder(o, includeControls, customerView){
-  const hasDisc     = o.items.some(it => (it.disc||'').toString().trim()     !== '');
-  const hasDiscCode = o.items.some(it => (it.discCode||'').toString().trim() !== '');
-  const hasDiscRule = o.items.some(it => (it.discRule||'').toString().trim() !== '');
-
-  const thead = `
-    <tr>
-      <th>รหัส</th>
-      <th>รายละเอียด</th>
-      <th>ราคา</th>
-      <th>จำนวน</th>
-      <th>รวม</th>
-      ${hasDisc?'<th>PROMOTION %</th>':''}
-      ${hasDiscCode?'<th>PROMOTION CODE</th>':''}
-      ${hasDiscRule?'<th>CONDITION</th>':''}
-    </tr>`;
-
-  const tbody = o.items.map(it=>`
-    <tr>
-      <td>${esc(it.code)}</td>
-      <td>${esc(it.desc)}</td>
-      <td align="right">${num(it.price)}</td>
-      <td align="right">${num(it.qty)}</td>
-      <td align="right">
-        ${it.amountGross>it.amountNet
-          ? `<span style="text-decoration:line-through;color:#888">${num(it.amountGross)}</span> → <b>${num(it.amountNet)}</b>`
-          : `<b>${num(it.amountNet)}</b>`}
-      </td>
-      ${hasDisc?`<td>${esc(discLabel(it.disc))}</td>`:''}
-      ${hasDiscCode?`<td>${esc(it.discCode||'ไม่มี')}</td>`:''}
-      ${hasDiscRule?`<td>${esc(it.discRule||'ไม่มี')}</td>`:''}
-    </tr>`).join('');
-
-  let badge = 'badge';
-  const bc = badgeClass(o.status); if (bc) badge += ' '+bc;
-
-  const adminBlock = includeControls ? `
-    <div class="toolbar no-print global" style="margin-top:10px;background:#f8fafc;padding:10px;border-radius:10px;border:1px dashed #e2e8f0">
-      <select id="st-${o.booking}" class="input">
-        <option ${o.status==='จองสินค้า'?'selected':''}>จองสินค้า</option>
-        <option ${o.status.startsWith('จัดส่งสินค้า')?'selected':''}>จัดส่งสินค้า (อย่างน้อย 7 วัน)</option>
-        <option ${o.status==='สินค้าถึงร้านค้าแล้ว'?'selected':''}>สินค้าถึงร้านค้าแล้ว</option>
-        <option ${o.status==='ลูกค้ารับสินค้าเรียบร้อย'?'selected':''}>ลูกค้ารับสินค้าเรียบร้อย</option>
-      </select>
-      <button class="btn" onclick="updateStatus('${o.booking}')">💾 อัปเดตสถานะ</button>
-      <button class="btn light" onclick="printOrder('${o.booking}')">🖨 พิมพ์ใบจองนี้</button>
-    </div>` : `
-      <div class="toolbar no-print global" style="margin-top:10px">
-        <button class="btn light" onclick="printOrder('${o.booking}')">🖨 พิมพ์ใบจองนี้</button>
-      </div>
-    `;
-
-  const custBlock = `
-    <div class="muted">
-      👤 ${esc(o.customer?.name||'')} ${esc(o.customer?.last||'')} ·
-      📧 ${esc(o.customer?.email||'-')} ·
-      📞 ${esc(o.customer?.tel||'-')}
-    </div>
-    <div class="muted">เส้นทาง: ${esc(o.fromShop||'-')} → ${esc(o.toShop||'-')}</div>`;
-
-  const timeline = customerView ? renderTimeline(o) : '';
-
-  return `
-  <div class="order" id="ord-${esc(o.booking)}">
-    <div class="order-head">
-      <div class="head-left">
-        <div class="head-title">📋 Booking #${esc(o.booking)}</div>
-        <img class="qr" alt="QR" src="${qrUrl(o.booking)}">
-      </div>
-      <div style="text-align:right">
-        <div class="${badge}">${esc(o.status)}</div>
-        <div class="muted">อัปเดตล่าสุด: ${esc(o.statusAt||'-')}</div>
-      </div>
-    </div>
-
-    ${custBlock}
-    ${timeline}
-
-    <table>
-      <thead>${thead}</thead>
-      <tbody>${tbody}</tbody>
-      <tfoot>
-        <tr>
-          <td colspan="${5 + (hasDisc?1:0) + (hasDiscCode?1:0) + (hasDiscRule?1:0)}" align="right"><b>ยอดรวมสุทธิ</b></td>
-          <td align="right"><b>${num(o.total)} บาท</b></td>
-        </tr>
-      </tfoot>
-    </table>
-
-    ${adminBlock}
-  </div>`;
-}
-
-function renderTimeline(o){
-  const flow = [
-    {key:'จองสินค้า', icon:'📝'},
-    {key:'จัดส่งสินค้า', icon:'📦'},
-    {key:'สินค้าถึงร้านค้าแล้ว', icon:'🏪'},
-    {key:'ลูกค้ารับสินค้าเรียบร้อย', icon:'✅'}
-  ];
-  const cur = o.status || '';
-  return `
-    <div class="timeline">
-      ${flow.map(st=>{
-        const done = cur.includes(st.key) || (cur==='ลูกค้ารับสินค้าเรียบร้อย');
-        return `<div class="titem ${done?'done':''}">
-          <div><b>${st.icon} ${st.key}</b></div>
-        </div>`;
-      }).join('')}
-    </div>`;
-}
-
-/* ====== BOOT ====== */
-showTab('tabCustomer');
-loadCustomerByLink();
-</script>
-</body>
-</html>
 <!doctype html>
 <html lang="th">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>เมนูลงทะเบียน/จองสินค้า</title>
+  <title>Toy City – Order Portal</title>
   <style>
     :root { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto; }
     body { margin:0; background:#0b2545; color:#fff; }
     .nav { display:flex; gap:12px; align-items:center; padding:14px 20px; background:#0f2f5f; position:sticky; top:0; z-index:10; box-shadow:0 6px 16px rgba(0,0,0,.25);}
-    .nav h1 { margin:0; font-size:18px; font-weight:700; }
+    .nav h1 { margin:0; font-size:18px; font-weight:800; letter-spacing:.2px; }
+    .spacer { flex:1; }
     .btn { padding:10px 14px; border:0; border-radius:12px; background:#1e72ff; color:#fff; cursor:pointer; font-weight:700; }
     .btn.ghost { background:#1b3c7a; }
+    .btn.min { padding:8px 10px; border-radius:10px; }
     .btn:disabled { opacity:.6; cursor:not-allowed; }
-    .wrap { max-width:960px; margin:0 auto; padding:20px; }
+
+    .wrap { max-width:1100px; margin:0 auto; padding:22px; }
     .card { background:#0f2f5f; border-radius:16px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.25); }
-    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .mt8{margin-top:8px;} .mt12{margin-top:12px;} .mt16{margin-top:16px;} .mt20{margin-top:20px;}
+    .hide { display:none; }
+    .muted { opacity:.8; font-size:13px; }
     label { display:block; font-size:13px; opacity:.95; margin:10px 0 6px; }
-    input { width:100%; padding:12px 14px; border-radius:10px; border:none; outline:none; background:#11376f; color:#fff; }
+    input, select { width:100%; padding:12px 14px; border-radius:10px; border:none; outline:none; background:#11376f; color:#fff; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .grid3 { display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; }
+
     table { width:100%; border-collapse:separate; border-spacing:0 8px; }
     th, td { text-align:left; padding:8px 10px; }
     th { font-size:12px; letter-spacing:.2px; opacity:.8; }
-    td > input { width:100%; }
-    .muted { opacity:.8; font-size:13px; }
+
+    /* admin list */
+    .order { background:#0c2a56; border-radius:14px; padding:14px; margin-top:12px; }
+    .order h4 { margin:0; font-size:15px; }
+    .order .meta { font-size:12px; opacity:.85; }
+    .right { text-align:right; }
     .ok { color:#9cf5bf; }
     .err { color:#ffb3b3; }
-    .right { text-align:right; }
-    .mini { padding:8px 10px; border-radius:10px; }
-    .mt12 { margin-top:12px; }
-    .mt16 { margin-top:16px; }
-    .hide { display:none; }
+    .badge { background:#5b48d9; color:#fff; padding:4px 8px; border-radius:999px; font-size:12px; }
   </style>
 </head>
 <body>
   <div class="nav">
-    <h1>เมนู</h1>
+    <h1>🧩 Toy City – Order Portal</h1>
+    <div class="spacer"></div>
     <button id="btnOpenForm" class="btn">วาง ลงทะเบียนจองสินค้า</button>
-    <button id="btnOpenHelp" class="btn ghost">วิธีใช้</button>
+    <button id="btnTabAdmin" class="btn ghost">Admin</button>
   </div>
 
   <div class="wrap">
-    <!-- การ์ดคำอธิบาย -->
-    <div class="card" id="cardHelp">
-      <h2 style="margin:0 0 6px;">วิธีใช้งาน</h2>
-      <ol style="margin:8px 0 0 18px;">
-        <li>กดปุ่ม <b>“วาง ลงทะเบียนจองสินค้า”</b> เพื่อเปิด/ปิดฟอร์ม</li>
-        <li>กรอกชื่อ/นามสกุล/เบอร์/อีเมล</li>
-        <li>เพิ่มรายการสินค้าได้หลายแถว (Code, ราคา, จำนวน)</li>
-        <li>กด <b>บันทึก</b> ข้อมูลจะถูกเพิ่มลงชีต <b>order</b> ทีละแถว (แถวละ 1 รายการ)</li>
-      </ol>
-      <div class="muted mt12">
-        Mapping: <b>B=OrderDate(วันนี้), E=Email, F=ชื่อ, G=นามสกุล, H=เบอร์มือถือ, I=Code, K=ราคา, L=จำนวน</b>.  
-        คอลัมน์ <b>J/N/O/P/Q/R</b> เว้นว่างไว้ให้กรอกทีหลังใน Google Sheet
-      </div>
-    </div>
-
-    <!-- การ์ดฟอร์ม -->
-    <div class="card hide" id="cardForm">
+    <!-- ฟอร์มลงทะเบียน -->
+    <section id="secForm" class="card hide">
       <h2 style="margin:0 0 6px;">ลงทะเบียนจองสินค้า</h2>
-      <div class="muted">OrderDate จะลงวันที่ปัจจุบันอัตโนมัติ</div>
+      <div class="muted">OrderDate จะลงวันที่ปัจจุบันอัตโนมัติ (คอลัมน์ B)</div>
 
       <div class="grid2 mt12">
         <div>
@@ -571,15 +74,16 @@ loadCustomerByLink();
 
       <div class="mt16">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div class="muted">ใส่ “Code สินค้า / ราคา / จำนวน” (ลงคอลัมน์ I, K, L)</div>
-          <button class="btn mini" id="btnAddItem">+ เพิ่มสินค้า</button>
+          <div class="muted">ใส่ “Code / ราคา / จำนวน” (ลงคอลัมน์ I, K, L)</div>
+          <button class="btn min" id="btnAddItem">+ เพิ่มสินค้า</button>
         </div>
+
         <table class="mt12">
           <thead>
             <tr>
-              <th style="width:45%;">Code สินค้า (I)</th>
-              <th style="width:25%;">ราคา (K)</th>
-              <th style="width:20%;">จำนวน (L)</th>
+              <th>Code สินค้า (I)</th>
+              <th>ราคา (K)</th>
+              <th>จำนวน (L)</th>
               <th class="right">ลบ</th>
             </tr>
           </thead>
@@ -589,129 +93,201 @@ loadCustomerByLink();
 
       <div class="mt16" style="display:flex; gap:10px; align-items:center;">
         <button class="btn" id="btnSubmit">บันทึก</button>
-        <span class="muted" id="state">พร้อมบันทึก</span>
+        <span id="state" class="muted">พร้อมบันทึก</span>
       </div>
 
       <div id="result" class="mt12"></div>
-    </div>
+
+      <div class="muted mt12">
+        * ระบบจะเว้นคอลัมน์ <b>J/N/O/P/Q/R</b> ไว้ให้แก้ในชีตภายหลัง
+      </div>
+    </section>
+
+    <!-- แผง Admin -->
+    <section id="secAdmin" class="card mt16">
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <h2 style="margin:0;">Admin Console</h2>
+        <span class="badge" id="lStatus">พร้อมใช้งาน</span>
+        <div class="spacer"></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="adminPass" type="password" placeholder="รหัสผ่าน Admin" style="width:220px;" autocomplete="current-password"/>
+          <button class="btn min ghost" id="togglePass">แสดง</button>
+        </div>
+      </div>
+
+      <div class="grid2 mt12">
+        <div>
+          <label>ค้นหา (รหัส/ชื่อ/อีเมล/โทร)</label>
+          <input id="search" placeholder="พิมพ์คำค้นแล้วกด รีเฟรช" />
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:8px;">
+          <button class="btn" id="btnRefresh">รีเฟรช</button>
+          <button class="btn ghost" id="btnClear">ล้าง</button>
+        </div>
+      </div>
+
+      <div id="orders" class="mt16"></div>
+    </section>
   </div>
 
   <script>
-    // ป้องกันอาการ "กดแล้วค้าง" ด้วยการ bind อีเวนต์หลัง DOM โหลดแน่ ๆ
-    (function(){
-      const $ = (id) => document.getElementById(id);
-      const cardForm = $('cardForm');
-      const cardHelp = $('cardHelp');
-      const btnOpenForm = $('btnOpenForm');
-      const btnOpenHelp = $('btnOpenHelp');
-      const btnAddItem = $('btnAddItem');
-      const btnSubmit = $('btnSubmit');
-      const itemsBody = $('itemsBody');
-      const result = $('result');
-      const state = $('state');
-      const firstName = $('firstName');
-      const lastName = $('lastName');
-      const phone = $('phone');
-      const email = $('email');
+    // >>>>>>>>>>>> ตั้งค่า: ใส่ลิงก์ Web App /exec ของคุณที่นี่ <<<<<<<<<<<<
+    // (ใช้ลิงก์ของคุณที่ให้มาแล้ว หากเปลี่ยน deployment ให้แทนค่าใหม่)
+    const GAS_EXEC_URL = 'https://script.google.com/macros/library/d/131YWF669fedQUp2oF4pcxgqXKsI6KHmL1bo_2SvtYEudeIwRB7kO_cFF/19';
 
-      function toggle(el){
-        el.classList.toggle('hide');
+    // อแดปเตอร์เรียก GAS: ใช้ google.script.run ถ้าอยู่ใน Apps Script; ถ้าไม่มีก็ใช้ fetch() (CORS-safe)
+    async function callAPI(apiName, payload = {}) {
+      if (window.google?.script?.run) {
+        return new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)[apiName](payload);
+        });
       }
+      const resp = await fetch(GAS_EXEC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // หลบ preflight
+        body: JSON.stringify({ api: apiName, payload })
+      });
+      return await resp.json();
+    }
 
-      function openFormIfEmpty(){
-        if (itemsBody.children.length === 0) addItemRow();
-      }
+    // Utilities เล็กน้อย
+    const $ = (id) => document.getElementById(id);
+    const fmt = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 });
 
-      function addItemRow() {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><input class="code" placeholder="เช่น 4611127"/></td>
-          <td><input class="price" type="number" step="0.01" min="0" placeholder="เช่น 2520"/></td>
-          <td><input class="qty" type="number" step="1" min="0" placeholder="เช่น 1"/></td>
-          <td class="right"><button class="btn mini ghost del">ลบ</button></td>
-        `;
-        tr.querySelector('.del').addEventListener('click', () => tr.remove());
-        itemsBody.appendChild(tr);
-      }
+    // Elements
+    const secForm   = $('secForm');
+    const secAdmin  = $('secAdmin');
+    const btnOpenForm = $('btnOpenForm');
+    const btnTabAdmin = $('btnTabAdmin');
+    const btnAddItem = $('btnAddItem');
+    const btnSubmit  = $('btnSubmit');
+    const itemsBody  = $('itemsBody');
+    const result     = $('result');
+    const state      = $('state');
+    const lStatus    = $('lStatus');
 
-      // ผูกอีเวนต์เมนู
-      btnOpenForm.addEventListener('click', () => {
-        toggle(cardForm);
-        // เปิดฟอร์มครั้งแรก สร้างแถวแรกให้เลย
-        if (!cardForm.classList.contains('hide')) {
-          openFormIfEmpty();
-          result.textContent = '';
-          state.textContent = 'พร้อมบันทึก';
-          cardForm.scrollIntoView({behavior:'smooth'});
-        }
+    const firstName  = $('firstName');
+    const lastName   = $('lastName');
+    const phone      = $('phone');
+    const email      = $('email');
+
+    const adminPass  = $('adminPass');
+    const togglePass = $('togglePass');
+    const btnRefresh = $('btnRefresh');
+    const btnClear   = $('btnClear');
+    const search     = $('search');
+    const ordersBox  = $('orders');
+
+    // Mask toggle
+    togglePass.onclick = () => {
+      const isPw = adminPass.type === 'password';
+      adminPass.type = isPw ? 'text' : 'password';
+      togglePass.textContent = isPw ? 'ซ่อน' : 'แสดง';
+    };
+
+    // Toggle sections
+    btnOpenForm.onclick = () => {
+      secForm.classList.toggle('hide');
+      if (!secForm.classList.contains('hide') && itemsBody.children.length === 0) addItemRow();
+      if (!secForm.classList.contains('hide')) secForm.scrollIntoView({behavior:'smooth'});
+    };
+    btnTabAdmin.onclick = () => {
+      secAdmin.scrollIntoView({behavior:'smooth'});
+    };
+
+    // Item rows
+    function addItemRow() {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input class="code" placeholder="เช่น 4611127"/></td>
+        <td><input class="price" type="number" step="0.01" min="0" placeholder="เช่น 2520"/></td>
+        <td><input class="qty" type="number" step="1" min="0" placeholder="เช่น 1"/></td>
+        <td class="right"><button class="btn min ghost del">ลบ</button></td>
+      `;
+      tr.querySelector('.del').onclick = () => tr.remove();
+      itemsBody.appendChild(tr);
+    }
+    btnAddItem.onclick = addItemRow;
+
+    // Submit form
+    btnSubmit.onclick = async () => {
+      const payload = {
+        firstName: (firstName.value || '').trim(),
+        lastName : (lastName.value  || '').trim(),
+        phone    : (phone.value     || '').trim(),
+        email    : (email.value     || '').trim(),
+        items    : []
+      };
+      [...itemsBody.querySelectorAll('tr')].forEach(tr => {
+        const code  = tr.querySelector('.code').value.trim();
+        const price = parseFloat(tr.querySelector('.price').value || '0');
+        const qty   = parseInt(tr.querySelector('.qty').value   || '0', 10);
+        if (code || price || qty) payload.items.push({ code, price, qty });
       });
 
-      btnOpenHelp.addEventListener('click', () => toggle(cardHelp));
-      btnAddItem.addEventListener('click', addItemRow);
+      if (payload.items.length === 0) {
+        result.innerHTML = '<div class="err">กรุณาใส่อย่างน้อย 1 รายการสินค้า</div>';
+        return;
+      }
 
-      btnSubmit.addEventListener('click', () => {
-        const payload = {
-          firstName: (firstName.value || '').trim(),
-          lastName : (lastName.value || '').trim(),
-          phone    : (phone.value || '').trim(),
-          email    : (email.value || '').trim(),
-          items    : []
-        };
-        [...itemsBody.querySelectorAll('tr')].forEach(tr => {
-          const code  = tr.querySelector('.code').value.trim();
-          const price = parseFloat(tr.querySelector('.price').value || '0');
-          const qty   = parseInt(tr.querySelector('.qty').value || '0', 10);
-          if (code || price || qty) payload.items.push({ code, price, qty });
-        });
-
-        if (payload.items.length === 0) {
-          result.innerHTML = '<div class="err">กรุณาใส่อย่างน้อย 1 รายการสินค้า</div>';
-          return;
-        }
-
-        // ตรวจว่ารันใน Apps Script environment มั้ย
-        if (!window.google || !google.script || !google.script.run) {
-          result.innerHTML = '<div class="err">หน้านี้ไม่ได้รันจาก Apps Script (google.script.run ไม่พร้อม). กรุณาเปิดผ่าน URL ของ Web App ที่ Deploy แล้ว</div>';
-          return;
-        }
-
+      try {
         btnSubmit.disabled = true;
         state.textContent = 'กำลังบันทึก...';
         result.textContent = '';
-
-        google.script.run
-          .withSuccessHandler(res => {
-            if (res && res.ok) {
-              result.innerHTML = `<div class="ok">✅ บันทึกสำเร็จ ${res.count} แถว • แถวที่ ${res.firstRow}–${res.lastRow}</div>`;
-              state.textContent = 'บันทึกแล้ว';
-              // เคลียร์เฉพาะรายการสินค้า
-              itemsBody.innerHTML = '';
-              addItemRow();
-            } else {
-              throw new Error(res?.error || 'บันทึกไม่สำเร็จ');
-            }
-          })
-          .withFailureHandler(err => {
-            result.innerHTML = `<div class="err">❌ ผิดพลาด: ${err?.message || err}</div>`;
-            state.textContent = 'เกิดข้อผิดพลาด';
-          })
-          .saveOrders(payload);
-
-        setTimeout(() => { btnSubmit.disabled = false; }, 600);
-      });
-
-      // เปิดฟอร์มอัตโนมัติถ้าใช้พารามิเตอร์ ?view=form
-      const qs = new URLSearchParams(location.search);
-      if (qs.get('view') === 'form') {
-        cardForm.classList.remove('hide');
-        openFormIfEmpty();
+        const res = await callAPI('saveOrders', payload);
+        if (!res?.ok) throw new Error(res?.error || 'บันทึกไม่สำเร็จ');
+        result.innerHTML = `<div class="ok">✅ บันทึกสำเร็จ ${res.count} แถว • แถวที่ ${res.firstRow}–${res.lastRow}</div>`;
+        state.textContent = 'บันทึกแล้ว';
+        itemsBody.innerHTML = ''; addItemRow();
+      } catch (err) {
+        result.innerHTML = `<div class="err">❌ ผิดพลาด: ${err.message || err}</div>`;
+        state.textContent = 'เกิดข้อผิดพลาด';
+      } finally {
+        btnSubmit.disabled = false;
       }
-    })();
+    };
+
+    // Admin – render list
+    function renderOrders(items) {
+      if (!items || items.length === 0) {
+        ordersBox.innerHTML = '<div class="muted">ยังไม่มีรายการ</div>';
+        return;
+      }
+      ordersBox.innerHTML = items.map(x => `
+        <div class="order">
+          <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <h4>รหัส: <b>${x.code || '-'}</b></h4>
+            <div class="meta">แถว: ${x.row} • วันที่: ${x.orderDate || '-'}</div>
+          </div>
+          <div class="meta mt8">👤 ${x.firstName || ''} ${x.lastName || ''} • ✉️ ${x.email || '-'} • 📞 ${x.phone || '-'}</div>
+          <div class="meta mt8">ราคา: ${fmt.format(x.price || 0)} • จำนวน: ${fmt.format(x.qty || 0)}</div>
+        </div>
+      `).join('');
+    }
+
+    async function refreshOrders() {
+      try {
+        lStatus.textContent = 'กำลังโหลด...';
+        const res = await callAPI('getOrders', { limit: 50, q: (search.value || '') });
+        if (!res?.ok) throw new Error(res?.error || 'โหลดไม่สำเร็จ');
+        renderOrders(res.items || []);
+        lStatus.textContent = `พร้อมใช้งาน (รวม ${res.total || 0})`;
+      } catch (err) {
+        lStatus.textContent = 'ผิดพลาด';
+        ordersBox.innerHTML = `<div class="err">โหลดไม่สำเร็จ: ${err.message || err}</div>`;
+      }
+    }
+
+    btnRefresh.onclick = refreshOrders;
+    btnClear.onclick = () => { search.value = ''; refreshOrders(); };
+
+    // เปิดหน้าแล้วทำงาน
+    document.addEventListener('DOMContentLoaded', () => {
+      addItemRow();               // เตรียมแถวแรกของฟอร์มไว้
+      refreshOrders();            // โหลดรายการฝั่ง Admin
+    });
   </script>
 </body>
 </html>
-
-
-
-
-
