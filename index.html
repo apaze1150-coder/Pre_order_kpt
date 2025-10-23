@@ -489,6 +489,228 @@ loadCustomerByLink();
 </script>
 </body>
 </html>
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>เมนูลงทะเบียน/จองสินค้า</title>
+  <style>
+    :root { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto; }
+    body { margin:0; background:#0b2545; color:#fff; }
+    .nav { display:flex; gap:12px; align-items:center; padding:14px 20px; background:#0f2f5f; position:sticky; top:0; z-index:10; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+    .nav h1 { margin:0; font-size:18px; font-weight:700; }
+    .btn { padding:10px 14px; border:0; border-radius:12px; background:#1e72ff; color:#fff; cursor:pointer; font-weight:700; }
+    .btn.ghost { background:#1b3c7a; }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    .wrap { max-width:960px; margin:0 auto; padding:20px; }
+    .card { background:#0f2f5f; border-radius:16px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.25); }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    label { display:block; font-size:13px; opacity:.95; margin:10px 0 6px; }
+    input { width:100%; padding:12px 14px; border-radius:10px; border:none; outline:none; background:#11376f; color:#fff; }
+    table { width:100%; border-collapse:separate; border-spacing:0 8px; }
+    th, td { text-align:left; padding:8px 10px; }
+    th { font-size:12px; letter-spacing:.2px; opacity:.8; }
+    td > input { width:100%; }
+    .muted { opacity:.8; font-size:13px; }
+    .ok { color:#9cf5bf; }
+    .err { color:#ffb3b3; }
+    .right { text-align:right; }
+    .mini { padding:8px 10px; border-radius:10px; }
+    .mt12 { margin-top:12px; }
+    .mt16 { margin-top:16px; }
+    .hide { display:none; }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <h1>เมนู</h1>
+    <button id="btnOpenForm" class="btn">วาง ลงทะเบียนจองสินค้า</button>
+    <button id="btnOpenHelp" class="btn ghost">วิธีใช้</button>
+  </div>
+
+  <div class="wrap">
+    <!-- การ์ดคำอธิบาย -->
+    <div class="card" id="cardHelp">
+      <h2 style="margin:0 0 6px;">วิธีใช้งาน</h2>
+      <ol style="margin:8px 0 0 18px;">
+        <li>กดปุ่ม <b>“วาง ลงทะเบียนจองสินค้า”</b> เพื่อเปิด/ปิดฟอร์ม</li>
+        <li>กรอกชื่อ/นามสกุล/เบอร์/อีเมล</li>
+        <li>เพิ่มรายการสินค้าได้หลายแถว (Code, ราคา, จำนวน)</li>
+        <li>กด <b>บันทึก</b> ข้อมูลจะถูกเพิ่มลงชีต <b>order</b> ทีละแถว (แถวละ 1 รายการ)</li>
+      </ol>
+      <div class="muted mt12">
+        Mapping: <b>B=OrderDate(วันนี้), E=Email, F=ชื่อ, G=นามสกุล, H=เบอร์มือถือ, I=Code, K=ราคา, L=จำนวน</b>.  
+        คอลัมน์ <b>J/N/O/P/Q/R</b> เว้นว่างไว้ให้กรอกทีหลังใน Google Sheet
+      </div>
+    </div>
+
+    <!-- การ์ดฟอร์ม -->
+    <div class="card hide" id="cardForm">
+      <h2 style="margin:0 0 6px;">ลงทะเบียนจองสินค้า</h2>
+      <div class="muted">OrderDate จะลงวันที่ปัจจุบันอัตโนมัติ</div>
+
+      <div class="grid2 mt12">
+        <div>
+          <label>ชื่อ (คอลัมน์ F)</label>
+          <input id="firstName" placeholder="เช่น สมชาย" />
+        </div>
+        <div>
+          <label>นามสกุล (คอลัมน์ G)</label>
+          <input id="lastName" placeholder="เช่น ใจดี" />
+        </div>
+        <div>
+          <label>เบอร์มือถือ (คอลัมน์ H)</label>
+          <input id="phone" placeholder="เช่น 0812345678" />
+        </div>
+        <div>
+          <label>Email (คอลัมน์ E)</label>
+          <input id="email" type="email" placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div class="mt16">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="muted">ใส่ “Code สินค้า / ราคา / จำนวน” (ลงคอลัมน์ I, K, L)</div>
+          <button class="btn mini" id="btnAddItem">+ เพิ่มสินค้า</button>
+        </div>
+        <table class="mt12">
+          <thead>
+            <tr>
+              <th style="width:45%;">Code สินค้า (I)</th>
+              <th style="width:25%;">ราคา (K)</th>
+              <th style="width:20%;">จำนวน (L)</th>
+              <th class="right">ลบ</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="mt16" style="display:flex; gap:10px; align-items:center;">
+        <button class="btn" id="btnSubmit">บันทึก</button>
+        <span class="muted" id="state">พร้อมบันทึก</span>
+      </div>
+
+      <div id="result" class="mt12"></div>
+    </div>
+  </div>
+
+  <script>
+    // ป้องกันอาการ "กดแล้วค้าง" ด้วยการ bind อีเวนต์หลัง DOM โหลดแน่ ๆ
+    (function(){
+      const $ = (id) => document.getElementById(id);
+      const cardForm = $('cardForm');
+      const cardHelp = $('cardHelp');
+      const btnOpenForm = $('btnOpenForm');
+      const btnOpenHelp = $('btnOpenHelp');
+      const btnAddItem = $('btnAddItem');
+      const btnSubmit = $('btnSubmit');
+      const itemsBody = $('itemsBody');
+      const result = $('result');
+      const state = $('state');
+      const firstName = $('firstName');
+      const lastName = $('lastName');
+      const phone = $('phone');
+      const email = $('email');
+
+      function toggle(el){
+        el.classList.toggle('hide');
+      }
+
+      function openFormIfEmpty(){
+        if (itemsBody.children.length === 0) addItemRow();
+      }
+
+      function addItemRow() {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input class="code" placeholder="เช่น 4611127"/></td>
+          <td><input class="price" type="number" step="0.01" min="0" placeholder="เช่น 2520"/></td>
+          <td><input class="qty" type="number" step="1" min="0" placeholder="เช่น 1"/></td>
+          <td class="right"><button class="btn mini ghost del">ลบ</button></td>
+        `;
+        tr.querySelector('.del').addEventListener('click', () => tr.remove());
+        itemsBody.appendChild(tr);
+      }
+
+      // ผูกอีเวนต์เมนู
+      btnOpenForm.addEventListener('click', () => {
+        toggle(cardForm);
+        // เปิดฟอร์มครั้งแรก สร้างแถวแรกให้เลย
+        if (!cardForm.classList.contains('hide')) {
+          openFormIfEmpty();
+          result.textContent = '';
+          state.textContent = 'พร้อมบันทึก';
+          cardForm.scrollIntoView({behavior:'smooth'});
+        }
+      });
+
+      btnOpenHelp.addEventListener('click', () => toggle(cardHelp));
+      btnAddItem.addEventListener('click', addItemRow);
+
+      btnSubmit.addEventListener('click', () => {
+        const payload = {
+          firstName: (firstName.value || '').trim(),
+          lastName : (lastName.value || '').trim(),
+          phone    : (phone.value || '').trim(),
+          email    : (email.value || '').trim(),
+          items    : []
+        };
+        [...itemsBody.querySelectorAll('tr')].forEach(tr => {
+          const code  = tr.querySelector('.code').value.trim();
+          const price = parseFloat(tr.querySelector('.price').value || '0');
+          const qty   = parseInt(tr.querySelector('.qty').value || '0', 10);
+          if (code || price || qty) payload.items.push({ code, price, qty });
+        });
+
+        if (payload.items.length === 0) {
+          result.innerHTML = '<div class="err">กรุณาใส่อย่างน้อย 1 รายการสินค้า</div>';
+          return;
+        }
+
+        // ตรวจว่ารันใน Apps Script environment มั้ย
+        if (!window.google || !google.script || !google.script.run) {
+          result.innerHTML = '<div class="err">หน้านี้ไม่ได้รันจาก Apps Script (google.script.run ไม่พร้อม). กรุณาเปิดผ่าน URL ของ Web App ที่ Deploy แล้ว</div>';
+          return;
+        }
+
+        btnSubmit.disabled = true;
+        state.textContent = 'กำลังบันทึก...';
+        result.textContent = '';
+
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res && res.ok) {
+              result.innerHTML = `<div class="ok">✅ บันทึกสำเร็จ ${res.count} แถว • แถวที่ ${res.firstRow}–${res.lastRow}</div>`;
+              state.textContent = 'บันทึกแล้ว';
+              // เคลียร์เฉพาะรายการสินค้า
+              itemsBody.innerHTML = '';
+              addItemRow();
+            } else {
+              throw new Error(res?.error || 'บันทึกไม่สำเร็จ');
+            }
+          })
+          .withFailureHandler(err => {
+            result.innerHTML = `<div class="err">❌ ผิดพลาด: ${err?.message || err}</div>`;
+            state.textContent = 'เกิดข้อผิดพลาด';
+          })
+          .saveOrders(payload);
+
+        setTimeout(() => { btnSubmit.disabled = false; }, 600);
+      });
+
+      // เปิดฟอร์มอัตโนมัติถ้าใช้พารามิเตอร์ ?view=form
+      const qs = new URLSearchParams(location.search);
+      if (qs.get('view') === 'form') {
+        cardForm.classList.remove('hide');
+        openFormIfEmpty();
+      }
+    })();
+  </script>
+</body>
+</html>
+
 
 
 
