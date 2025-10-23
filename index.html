@@ -133,71 +133,45 @@
   <script>
     // >>>>>>>>>>>> ตั้งค่า: ใส่ลิงก์ Web App /exec ของคุณที่นี่ <<<<<<<<<<<<
     // (ใช้ลิงก์ของคุณที่ให้มาแล้ว หากเปลี่ยน deployment ให้แทนค่าใหม่)
-    const GAS_EXEC_URL = 'https://script.google.com/macros/library/d/131YWF669fedQUp2oF4pcxgqXKsI6KHmL1bo_2SvtYEudeIwRB7kO_cFF/19';
+    const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycby9kitmsDUTeNfb7LSVXV_wDLt58Y8aQtP2G0KG-ExS--2oWPTaeUmgod_7zvCwY_WpFw/exec';
 
     // อแดปเตอร์เรียก GAS: ใช้ google.script.run ถ้าอยู่ใน Apps Script; ถ้าไม่มีก็ใช้ fetch() (CORS-safe)
-    async function callAPI(apiName, payload = {}) {
-      if (window.google?.script?.run) {
-        return new Promise((resolve, reject) => {
-          google.script.run
-            .withSuccessHandler(resolve)
-            .withFailureHandler(reject)[apiName](payload);
-        });
-      }
-      const resp = await fetch(GAS_EXEC_URL, {
+   async function callAPI(apiName, payload = {}) {
+    // 1) ถ้ารันใน Apps Script → ใช้ google.script.run (ดีที่สุด)
+    if (window.google?.script?.run) {
+      return new Promise((resolve, reject) => {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[apiName](payload);
+      });
+    }
+    // 2) พยายาม fetch ก่อน (กรณีบางโดเมน proxy header ให้)
+    try {
+      const r = await fetch(GAS_EXEC_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // หลบ preflight
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ api: apiName, payload })
       });
-      return await resp.json();
+      return await r.json();
+    } catch (e) {
+      // 3) ถ้า fetch ล้มเหลว → fallback เป็น JSONP
+      return callAPI_JSONP(apiName, payload);
     }
+  }
 
-    // Utilities เล็กน้อย
-    const $ = (id) => document.getElementById(id);
-    const fmt = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 });
-
-    // Elements
-    const secForm   = $('secForm');
-    const secAdmin  = $('secAdmin');
-    const btnOpenForm = $('btnOpenForm');
-    const btnTabAdmin = $('btnTabAdmin');
-    const btnAddItem = $('btnAddItem');
-    const btnSubmit  = $('btnSubmit');
-    const itemsBody  = $('itemsBody');
-    const result     = $('result');
-    const state      = $('state');
-    const lStatus    = $('lStatus');
-
-    const firstName  = $('firstName');
-    const lastName   = $('lastName');
-    const phone      = $('phone');
-    const email      = $('email');
-
-    const adminPass  = $('adminPass');
-    const togglePass = $('togglePass');
-    const btnRefresh = $('btnRefresh');
-    const btnClear   = $('btnClear');
-    const search     = $('search');
-    const ordersBox  = $('orders');
-
-    // Mask toggle
-    togglePass.onclick = () => {
-      const isPw = adminPass.type === 'password';
-      adminPass.type = isPw ? 'text' : 'password';
-      togglePass.textContent = isPw ? 'ซ่อน' : 'แสดง';
-    };
-
-    // Toggle sections
-    btnOpenForm.onclick = () => {
-      secForm.classList.toggle('hide');
-      if (!secForm.classList.contains('hide') && itemsBody.children.length === 0) addItemRow();
-      if (!secForm.classList.contains('hide')) secForm.scrollIntoView({behavior:'smooth'});
-    };
-    btnTabAdmin.onclick = () => {
-      secAdmin.scrollIntoView({behavior:'smooth'});
-    };
-
-    // Item rows
+  function callAPI_JSONP(apiName, payload = {}) {
+    return new Promise((resolve, reject) => {
+      const cb = '__jsonp_cb_' + Math.random().toString(36).slice(2);
+      window[cb] = (data) => { try { resolve(data); } finally { cleanup(); } };
+      function cleanup(){ delete window[cb]; if (s && s.parentNode) s.parentNode.removeChild(s); }
+      const url = GAS_EXEC_URL
+        + '?api=' + encodeURIComponent(apiName)
+        + '&payload=' + encodeURIComponent(JSON.stringify(payload))
+        + '&callback=' + encodeURIComponent(cb);
+      const s = document.createElement('script');
+      s.src = url; s.onerror = () => { cleanup(); reject(new Error('JSONP failed')); };
+      document.head.appendChild(s);
+    });
+  }
+</script>
     function addItemRow() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -291,3 +265,4 @@
   </script>
 </body>
 </html>
+
