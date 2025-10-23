@@ -70,6 +70,90 @@
       <button class="ghost" onclick="showTab('tabAdmin')">⚙️ Admin</button>
     </nav>
   </div>
+ <!-- ① วาง "ภายใน <head> ... </head>" (ถ้ามีสไตล์เดิมอยู่แล้ว ข้ามส่วนนี้ได้) -->
+<style>
+  .kp-btn { padding:10px 14px; border:0; border-radius:12px; font-weight:700; cursor:pointer; }
+  .kp-btn-primary { background:#1e72ff; color:#fff; }
+  .kp-section { background:#0f2f5f; color:#fff; border-radius:16px; padding:18px; margin:16px 0; }
+  .kp-flex { display:flex; align-items:center; gap:12px; }
+  .kp-muted { opacity:.8; font-size:13px; }
+  .kp-iframe { width:100%; height:920px; border:0; border-radius:12px; background:#0b2545; }
+  @media (max-width: 640px){ .kp-iframe{ height:80vh; } }
+</style>
+
+<!-- ② วาง "บริเวณเมนู" ที่คุณอยากให้มีปุ่ม (เช่น ใน navbar) -->
+<button id="kpOpenRegister" class="kp-btn kp-btn-primary">วาง ลงทะเบียนจองสินค้า</button>
+
+<!-- ③ วาง "ตำแหน่งเนื้อหาหลัก" ที่อยากให้แสดงฟอร์ม (ใต้เมนูหรือท้ายหน้า) -->
+<section id="kpRegisterWrap" class="kp-section" hidden>
+  <div class="kp-flex">
+    <h2 style="margin:0;">ลงทะเบียนจองสินค้า</h2>
+    <span id="kpState" class="kp-muted">กำลังเตรียมแบบฟอร์ม...</span>
+  </div>
+
+  <!-- ถ้าโดเมนของคุณอนุญาตให้ฝัง iframe ได้ ฟอร์มจะมาแสดงตรงนี้ -->
+  <iframe id="kpRegisterIframe"
+          class="kp-iframe"
+          title="ลงทะเบียนจองสินค้า (Apps Script)"
+          src=""
+          loading="lazy"></iframe>
+
+  <!-- ปุ่มสำรอง เผื่อบางโดเมนบล็อกการฝัง -->
+  <div style="margin-top:10px;">
+    <a id="kpOpenFull" class="kp-btn" style="background:#1b3c7a; color:#fff;" target="_blank" rel="noopener">
+      เปิดเต็มหน้าจอ (เผื่อฝังไม่ได้)
+    </a>
+  </div>
+
+  <div class="kp-muted" style="margin-top:8px;">
+    * หมายเหตุ: ฟอร์มนี้จะบันทึกลงชีต <b>order</b> โดยแมปคอลัมน์
+    <b>B=OrderDate(วันนี้), E=Email, F=ชื่อ, G=นามสกุล, H=เบอร์มือถือ, I=Code, K=ราคา, L=จำนวน</b>.
+    คอลัมน์ <b>J/N/O/P/Q/R</b> เว้นว่างให้เติมทีหลังใน Google Sheet ได้เอง
+  </div>
+</section>
+
+<!-- ④ วาง "ก่อนปิด </body>" เพื่อให้ปุ่มทำงาน -->
+<script>
+  (function(){
+    // ใส่ URL Web App ของคุณที่นี่
+    const KP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec';
+
+    const btnOpen   = document.getElementById('kpOpenRegister');
+    const wrap      = document.getElementById('kpRegisterWrap');
+    const iframe    = document.getElementById('kpRegisterIframe');
+    const openFull  = document.getElementById('kpOpenFull');
+    const state     = document.getElementById('kpState');
+
+    if (openFull) openFull.href = KP_EXEC_URL;
+
+    function openSection(){
+      if (wrap.hasAttribute('hidden')) {
+        wrap.removeAttribute('hidden');
+        if (iframe && !iframe.src) {
+          state.textContent = 'กำลังโหลดแบบฟอร์ม...';
+          iframe.src = KP_EXEC_URL;
+          // อัปเดตสถานะเมื่อโหลดเสร็จ
+          iframe.addEventListener('load', function onLoad(){
+            state.textContent = 'พร้อมบันทึก';
+            iframe.removeEventListener('load', onLoad);
+          });
+          // เผื่อโดนบล็อกการฝัง: แสดงปุ่มเปิดเต็มหน้าจอไว้เป็นทางเลือก
+          setTimeout(() => { if (state.textContent !== 'พร้อมบันทึก') state.textContent = 'ถ้าฟอร์มไม่แสดง กด "เปิดเต็มหน้าจอ" ได้เลย'; }, 2000);
+        }
+        wrap.scrollIntoView({behavior:'smooth', block:'start'});
+      } else {
+        wrap.setAttribute('hidden','');
+      }
+    }
+
+    if (btnOpen) btnOpen.addEventListener('click', openSection);
+
+    // รองรับ deep link ?view=register เพื่อเปิดส่วนฟอร์มอัตโนมัติ
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('view') === 'register') openSection();
+  })();
+</script>
+ 
 </header>
 
 <div class="wrap">
@@ -405,5 +489,6 @@ loadCustomerByLink();
 </script>
 </body>
 </html>
+
 
 
