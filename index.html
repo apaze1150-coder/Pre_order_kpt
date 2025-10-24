@@ -5,247 +5,77 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Toy City – Order Portal</title>
 <style>
-  :root { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto; }
-  body { margin:0; background:#0b2545; color:#fff; }
-  .nav { display:flex; gap:12px; align-items:center; padding:14px 20px; background:#0f2f5f; position:sticky; top:0; z-index:10; box-shadow:0 6px 16px rgba(0,0,0,.25); }
-  .nav h1 { margin:0; font-size:18px; font-weight:800; }
+  :root{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto}
+  body{margin:0;background:#0b2545;color:#fff}
+  .nav{display:flex;gap:12px;align-items:center;padding:14px 20px;background:#0f2f5f;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+  .nav h1{margin:0;font-size:18px;font-weight:800}
   .spacer{flex:1}
-  .btn{ padding:10px 14px; border:0; border-radius:12px; background:#1e72ff; color:#fff; cursor:pointer; font-weight:700; }
-  .btn.ghost{ background:#1b3c7a; }
-  .btn.min{ padding:8px 10px; border-radius:10px; }
-  .btn:disabled{opacity:.6;cursor:not-allowed}
-  .wrap{ max-width:1100px; margin:0 auto; padding:22px; }
-  .card{ background:#0f2f5f; border-radius:16px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.25); }
-  .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
-  .hide{ display:none }
-  .muted{ opacity:.8; font-size:13px; }
-  label{ display:block; font-size:13px; margin:10px 0 6px; }
-  input{ width:100%; padding:12px 14px; border-radius:10px; border:none; outline:none; background:#11376f; color:#fff; }
-  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  table{ width:100%; border-collapse:separate; border-spacing:0 8px; }
-  th,td{ text-align:left; padding:8px 10px; }
-  th{ font-size:12px; opacity:.8 }
-  .order{ background:#0c2a56; border-radius:14px; padding:14px; margin-top:12px; }
-  .order h4{ margin:0; font-size:15px; }
-  .meta{ font-size:12px; opacity:.85 }
-  .right{text-align:right}
-  .ok{ color:#9cf5bf } .err{ color:#ffb3b3 }
-  .badge{ background:#5b48d9; color:#fff; padding:4px 8px; border-radius:999px; font-size:12px; }
+  .btn{padding:10px 14px;border:0;border-radius:12px;background:#1e72ff;color:#fff;cursor:pointer;font-weight:700}
+  .btn.ghost{background:#1b3c7a}
+  .wrap{max-width:1200px;margin:0 auto;padding:16px}
+  .card{background:#0f2f5f;border-radius:16px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .tabbar{display:flex;gap:8px;align-items:center}
+  .active{box-shadow:0 0 0 2px #fff3;border-radius:12px}
+  iframe{width:100%;height:1200px;border:0;border-radius:12px;background:#0b2545}
+  @media (max-width: 640px){ iframe{height:90vh} }
 </style>
 </head>
 <body>
   <div class="nav">
     <h1>🧩 Toy City – Order Portal</h1>
     <div class="spacer"></div>
-    <button id="btnOpenForm" class="btn">วาง ลงทะเบียนจองสินค้า</button>
-    <button id="btnTabAdmin" class="btn ghost">Admin</button>
+    <button id="tabFormBtn"  class="btn">วาง ลงทะเบียนจองสินค้า</button>
+    <button id="tabAdminBtn" class="btn ghost">Admin</button>
   </div>
 
   <div class="wrap">
-    <!-- ฟอร์มลงทะเบียน -->
-    <section id="secForm" class="card hide">
-      <h2 style="margin:0 0 6px;">ลงทะเบียนจองสินค้า</h2>
-      <div class="muted">OrderDate จะลงวันที่ปัจจุบันอัตโนมัติ (คอลัมน์ B)</div>
-
-      <div class="grid2 mt12">
-        <div><label>ชื่อ (F)</label><input id="firstName" placeholder="เช่น สมชาย"></div>
-        <div><label>นามสกุล (G)</label><input id="lastName" placeholder="เช่น ใจดี"></div>
-        <div><label>เบอร์มือถือ (H)</label><input id="phone" placeholder="เช่น 0812345678"></div>
-        <div><label>Email (E)</label><input id="email" type="email" placeholder="you@example.com"></div>
+    <div class="card">
+      <div class="tabbar" style="margin-bottom:8px;">
+        <span id="status" style="opacity:.8;font-size:13px">พร้อมใช้งาน</span>
       </div>
-
-      <div class="mt16">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div class="muted">ใส่ “Code / ราคา / จำนวน” (I, K, L)</div>
-          <button class="btn min" id="btnAddItem">+ เพิ่มสินค้า</button>
-        </div>
-        <table class="mt12">
-          <thead>
-            <tr><th>Code สินค้า (I)</th><th>ราคา (K)</th><th>จำนวน (L)</th><th class="right">ลบ</th></tr>
-          </thead>
-          <tbody id="itemsBody"></tbody>
-        </table>
-      </div>
-
-      <div class="mt16" style="display:flex;gap:10px;align-items:center;">
-        <button class="btn" id="btnSubmit">บันทึก</button>
-        <span id="state" class="muted">พร้อมบันทึก</span>
-      </div>
-      <div id="result" class="mt12"></div>
-      <div class="muted mt12">* คอลัมน์ <b>J/N/O/P/Q/R</b> เว้นว่างไว้กรอกในชีตภายหลัง</div>
-    </section>
-
-    <!-- Admin -->
-    <section id="secAdmin" class="card mt16">
-      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-        <h2 style="margin:0;">Admin Console</h2>
-        <span class="badge" id="lStatus">พร้อมใช้งาน</span>
-        <div class="spacer"></div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input id="adminPass" type="password" placeholder="รหัสผ่าน Admin" style="width:220px;" autocomplete="current-password">
-          <button class="btn min ghost" id="togglePass">แสดง</button>
-        </div>
-      </div>
-
-      <div class="grid2 mt12">
-        <div><label>ค้นหา (รหัส/ชื่อ/อีเมล/โทร)</label><input id="search" placeholder="พิมพ์คำค้นแล้วกด รีเฟรช"></div>
-        <div style="display:flex;align-items:flex-end;gap:8px;">
-          <button class="btn" id="btnRefresh">รีเฟรช</button>
-          <button class="btn ghost" id="btnClear">ล้าง</button>
-        </div>
-      </div>
-      <div id="orders" class="mt16"></div>
-    </section>
+      <!-- IFRAMES -->
+      <iframe id="frameForm"  title="ลงทะเบียนจองสินค้า (GAS)"></iframe>
+      <iframe id="frameAdmin" title="Admin (GAS)" style="display:none"></iframe>
+    </div>
   </div>
 
-<!-- ***************** JS เริ่มต้นที่นี่ (ห้ามให้แพลตฟอร์มตัดทิ้ง) ***************** -->
 <script>
-'use strict';
-
-// 1) ตั้งค่า URL GAS (ลิงก์ /exec ของคุณ)
-const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycby9kitmsDUTeNfb7LSVXV_wDLt58Y8aQtP2G0KG-ExS--2oWPTaeUmgod_7zvCwY_WpFw/exec';
-
-// 2) อแดปเตอร์เรียก GAS: ใช้ google.script.run เมื่อรันใน Apps Script; นอกนั้นลอง fetch แล้ว fallback JSONP
-async function callAPI(apiName, payload = {}) {
-  if (window.google && google.script && google.script.run) {
-    return new Promise((resolve, reject) => {
-      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[apiName](payload);
-    });
-  }
-  try {
-    const r = await fetch(GAS_EXEC_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ api: apiName, payload })
-    });
-    return await r.json();
-  } catch (e) {
-    return callAPI_JSONP(apiName, payload); // fallback CORS
-  }
-}
-<script>
+  // >>> ใส่ลิงก์ /exec ของคุณตรงนี้ <<<
   const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec';
 
-  function callAPI_JSONP(apiName, payload = {}) {
-    return new Promise((resolve, reject) => {
-      const cb = '__jp_' + Math.random().toString(36).slice(2);
-      const s  = document.createElement('script');
-      const url = GAS_EXEC_URL
-        + '?api=' + encodeURIComponent(apiName)
-        + '&payload=' + encodeURIComponent(JSON.stringify(payload))
-        + '&callback=' + cb
-        + '&_=' + Date.now(); // กันแคช
+  // ถ้าคุณทำ index.html ใน GAS ให้เปิดฟอร์ม/แอดมิน “หน้าเดียวกัน”
+  // ก็ใช้ URL เดียวกันทั้งสอง iframe ได้เลย:
+  const FORM_URL  = GAS_EXEC_URL + '?view=form';   // ถ้าคุณยังไม่ได้ทำตัวแบ่ง view ก็ใช้ GAS_EXEC_URL เฉย ๆ ได้
+  const ADMIN_URL = GAS_EXEC_URL + '?view=admin';  // เช่นกัน ถ้าไม่มี view ให้ใช้ GAS_EXEC_URL ไปก่อน
 
-      window[cb] = (data) => { cleanup(); resolve(data); };
-      s.src = url; s.async = true;
-      s.onerror = () => { cleanup(); reject(new Error('JSONP network blocked')); };
-      document.head.appendChild(s);
+  const fForm  = document.getElementById('frameForm');
+  const fAdmin = document.getElementById('frameAdmin');
+  const bForm  = document.getElementById('tabFormBtn');
+  const bAdmin = document.getElementById('tabAdminBtn');
+  const status = document.getElementById('status');
 
-      function cleanup(){
-        delete window[cb];
-        if (s && s.parentNode) s.parentNode.removeChild(s);
-      }
-    });
+  function showForm(){
+    fForm.style.display  = '';
+    fAdmin.style.display = 'none';
+    bForm.classList.add('active');
+    bAdmin.classList.remove('active');
+    status.textContent = 'แบบฟอร์มลงทะเบียน';
+  }
+  function showAdmin(){
+    fForm.style.display  = 'none';
+    fAdmin.style.display = '';
+    bAdmin.classList.add('active');
+    bForm.classList.remove('active');
+    status.textContent = 'Admin Console';
   }
 
-  // ถ้าจะบังคับใช้ JSONP ตอนโหลดรายการ:
-  // const res = await callAPI_JSONP('getOrders', { limit: 50, q: search.value || '' });
+  bForm.onclick  = showForm;
+  bAdmin.onclick = showAdmin;
+
+  // โหลดครั้งแรก
+  fForm.src  = FORM_URL;
+  fAdmin.src = ADMIN_URL; // โหลดล่วงหน้าให้พร้อมสลับเร็ว
+  showForm();
 </script>
-
-// 3) Utils / elements
-const $ = (id) => document.getElementById(id);
-const fmt = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 });
-
-const secForm = $('secForm'), secAdmin = $('secAdmin');
-const btnOpenForm = $('btnOpenForm'), btnTabAdmin = $('btnTabAdmin');
-const btnAddItem = $('btnAddItem'), btnSubmit = $('btnSubmit');
-const itemsBody = $('itemsBody'), result = $('result'), state = $('state');
-const firstName = $('firstName'), lastName = $('lastName'), phone = $('phone'), email = $('email');
-
-const lStatus = $('lStatus'), adminPass = $('adminPass'), togglePass = $('togglePass');
-const btnRefresh = $('btnRefresh'), btnClear = $('btnClear'), search = $('search'), ordersBox = $('orders');
-
-// 4) UI handlers
-togglePass.onclick = () => { const isPw = adminPass.type === 'password'; adminPass.type = isPw ? 'text' : 'password'; togglePass.textContent = isPw ? 'ซ่อน' : 'แสดง'; };
-btnOpenForm.onclick = () => { secForm.classList.toggle('hide'); if (!secForm.classList.contains('hide') && itemsBody.children.length === 0) addItemRow(); if (!secForm.classList.contains('hide')) secForm.scrollIntoView({behavior:'smooth'}); };
-btnTabAdmin.onclick = () => { secAdmin.scrollIntoView({behavior:'smooth'}); };
-
-function addItemRow() {
-  const tr = document.createElement('tr');
-  tr.innerHTML = '<td><input class="code" placeholder="เช่น 4611127"></td>'
-               + '<td><input class="price" type="number" step="0.01" min="0" placeholder="เช่น 2520"></td>'
-               + '<td><input class="qty" type="number" step="1" min="0" placeholder="เช่น 1"></td>'
-               + '<td class="right"><button class="btn min ghost del">ลบ</button></td>';
-  tr.querySelector('.del').onclick = () => tr.remove();
-  itemsBody.appendChild(tr);
-}
-btnAddItem.onclick = addItemRow;
-
-// 5) Submit form
-btnSubmit.onclick = async () => {
-  const payload = {
-    firstName: (firstName.value || '').trim(),
-    lastName : (lastName.value || '').trim(),
-    phone    : (phone.value || '').trim(),
-    email    : (email.value || '').trim(),
-    items    : []
-  };
-  [...itemsBody.querySelectorAll('tr')].forEach(tr => {
-    const code  = tr.querySelector('.code').value.trim();
-    const price = parseFloat(tr.querySelector('.price').value || '0');
-    const qty   = parseInt(tr.querySelector('.qty').value || '0', 10);
-    if (code || price || qty) payload.items.push({ code, price, qty });
-  });
-
-  if (payload.items.length === 0) {
-    result.innerHTML = '<div class="err">กรุณาใส่อย่างน้อย 1 รายการสินค้า</div>'; return;
-  }
-
-  try {
-    btnSubmit.disabled = true; state.textContent = 'กำลังบันทึก...'; result.textContent = '';
-    const res = await callAPI('saveOrders', payload);
-    if (!res || !res.ok) throw new Error(res?.error || 'บันทึกไม่สำเร็จ');
-    result.innerHTML = `<div class="ok">✅ บันทึกสำเร็จ ${res.count} แถว • แถวที่ ${res.firstRow}–${res.lastRow}</div>`;
-    state.textContent = 'บันทึกแล้ว';
-    itemsBody.innerHTML = ''; addItemRow();
-  } catch (err) {
-    result.innerHTML = `<div class="err">❌ ผิดพลาด: ${err.message || err}</div>`;
-    state.textContent = 'เกิดข้อผิดพลาด';
-  } finally {
-    btnSubmit.disabled = false;
-  }
-};
-
-// 6) Admin list
-function renderOrders(items) {
-  if (!items || items.length === 0) { ordersBox.innerHTML = '<div class="muted">ยังไม่มีรายการ</div>'; return; }
-  ordersBox.innerHTML = items.map(x => (
-    '<div class="order">'
-    + `<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;"><h4>รหัส: <b>${x.code || '-'}</b></h4><div class="meta">แถว: ${x.row} • วันที่: ${x.orderDate || '-'}</div></div>`
-    + `<div class="meta mt8">👤 ${x.firstName || ''} ${x.lastName || ''} • ✉️ ${x.email || '-'} • 📞 ${x.phone || '-'}</div>`
-    + `<div class="meta mt8">ราคา: ${fmt.format(x.price || 0)} • จำนวน: ${fmt.format(x.qty || 0)}</div>`
-    + '</div>'
-  )).join('');
-}
-async function refreshOrders(){
-  try {
-    lStatus.textContent = 'กำลังโหลด...';
-    const res = await callAPI('getOrders', { limit: 50, q: (search.value || '') });
-    if (!res?.ok) throw new Error(res?.error || 'โหลดไม่สำเร็จ');
-    renderOrders(res.items || []);
-    lStatus.textContent = `พร้อมใช้งาน (รวม ${res.total || 0})`;
-  } catch (err) {
-    lStatus.textContent = 'ผิดพลาด';
-    ordersBox.innerHTML = `<div class="err">โหลดไม่สำเร็จ: ${err.message || err}</div>`;
-  }
-}
-btnRefresh.onclick = refreshOrders;
-btnClear.onclick = () => { search.value=''; refreshOrders(); };
-
-// 7) เริ่มทำงาน
-document.addEventListener('DOMContentLoaded', () => { addItemRow(); refreshOrders(); });
-</script>
-<!-- ***************** JS จบ ***************** -->
 </body>
 </html>
-
