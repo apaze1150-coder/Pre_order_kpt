@@ -123,20 +123,34 @@ async function callAPI(apiName, payload = {}) {
     return callAPI_JSONP(apiName, payload); // fallback CORS
   }
 }
-function callAPI_JSONP(apiName, payload = {}) {
-  return new Promise((resolve, reject) => {
-    const cb = '__jsonp_cb_' + Math.random().toString(36).slice(2);
-    window[cb] = (data) => { try { resolve(data); } finally { cleanup(); } };
-    function cleanup(){ delete window[cb]; if (s && s.parentNode) s.parentNode.removeChild(s); }
-    const url = GAS_EXEC_URL
-      + '?api=' + encodeURIComponent(apiName)
-      + '&payload=' + encodeURIComponent(JSON.stringify(payload))
-      + '&callback=' + encodeURIComponent(cb);
-    const s = document.createElement('script');
-    s.src = url; s.onerror = () => { cleanup(); reject(new Error('JSONP failed')); };
-    document.head.appendChild(s);
-  });
-}
+<script>
+  const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbzc8m3R_sUQX3kDZEbYFYMwaNxrrju1VWkX6HGGCnUON9dR48p-woccIuddzk_8RxP_3g/exec';
+
+  function callAPI_JSONP(apiName, payload = {}) {
+    return new Promise((resolve, reject) => {
+      const cb = '__jp_' + Math.random().toString(36).slice(2);
+      const s  = document.createElement('script');
+      const url = GAS_EXEC_URL
+        + '?api=' + encodeURIComponent(apiName)
+        + '&payload=' + encodeURIComponent(JSON.stringify(payload))
+        + '&callback=' + cb
+        + '&_=' + Date.now(); // กันแคช
+
+      window[cb] = (data) => { cleanup(); resolve(data); };
+      s.src = url; s.async = true;
+      s.onerror = () => { cleanup(); reject(new Error('JSONP network blocked')); };
+      document.head.appendChild(s);
+
+      function cleanup(){
+        delete window[cb];
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }
+    });
+  }
+
+  // ถ้าจะบังคับใช้ JSONP ตอนโหลดรายการ:
+  // const res = await callAPI_JSONP('getOrders', { limit: 50, q: search.value || '' });
+</script>
 
 // 3) Utils / elements
 const $ = (id) => document.getElementById(id);
@@ -234,3 +248,4 @@ document.addEventListener('DOMContentLoaded', () => { addItemRow(); refreshOrder
 <!-- ***************** JS จบ ***************** -->
 </body>
 </html>
+
